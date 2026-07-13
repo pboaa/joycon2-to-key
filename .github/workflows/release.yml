@@ -25,6 +25,17 @@ jobs:
         with:
           workspaces: src-tauri
       - run: npm ci
+      # Release notes come from src/lib/changelog.json (same source as the
+      # in-app 更新履歴), so notes are authored once. Fed to tauri-action below.
+      - name: Build release notes from changelog
+        id: notes
+        shell: bash
+        run: |
+          {
+            echo "body<<CHANGELOG_EOF"
+            node scripts/release-notes.mjs "${{ github.ref_name }}"
+            echo "CHANGELOG_EOF"
+          } >> "$GITHUB_OUTPUT"
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,5 +49,8 @@ jobs:
           # (a build-only smoke test — the draft it makes can just be discarded).
           tagName: ${{ github.ref_name }}
           releaseName: "JoyCon2 to Key ${{ github.ref_name }}"
+          # Notes from changelog.json → also becomes the updater's latest.json
+          # `notes`, shown in the in-app update modal.
+          releaseBody: ${{ steps.notes.outputs.body }}
           releaseDraft: true
           prerelease: false
