@@ -222,15 +222,13 @@ export function VariantRow({
         />
       </div>
 
-      {/* 下部アクション行：左端にコピー/貼り付け（あれば）、その隣に削除。本体と
-          区切り線＋間隔で分け、確認を挟んで誤爆を防ぐ。コピペがある場合は削除を
-          その隣（左寄せ）に、無い場合は従来どおり右寄せ（定義エディタ）。 */}
+      {/* 下部アクション行：コピー/貼り付け（あれば）を左端、削除は常に右端へ。
+          本体と区切り線＋間隔で分け、確認を挟んで誤爆を防ぐ。削除を反対端に置く
+          ことでコピペとの誤クリックも避ける（定義エディタは leadingActions 無しで
+          従来どおり削除だけが右端）。 */}
       <div className="flex items-center gap-1.5 pt-3 border-t border-border">
         {leadingActions}
-        <DeleteButton
-          onClick={requestDelete}
-          className={leadingActions ? "px-3" : "ml-auto px-3"}
-        />
+        <DeleteButton onClick={requestDelete} className="ml-auto px-3" />
       </div>
     </div>
   );
