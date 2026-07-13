@@ -28,6 +28,11 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Signs the installer and emits latest.json + .sig for the updater.
+          # Both are repo Actions secrets (private key + its password); the
+          # matching public key is pinned in tauri.conf.json.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           # On a tag push these resolve to the tag; on manual runs, to the branch
           # (a build-only smoke test — the draft it makes can just be discarded).

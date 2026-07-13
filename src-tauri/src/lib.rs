@@ -66,6 +66,10 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
+        // In-app updater + process (for relaunch after an install). The check /
+        // download / install is driven from the front end; nothing auto-updates.
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .manage(AppState {
             joycon,
             active_layer,

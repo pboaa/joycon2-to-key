@@ -25,6 +25,11 @@ tauri-plugin-dialog = "2"
 # Enforce a single running instance: a second launch focuses the existing
 # window instead of starting a rival BLE loop / input thread.
 tauri-plugin-single-instance = "2"
+# In-app updates: check GitHub Releases for a newer signed installer, download
+# and install it, then relaunch (via the process plugin). Never forced — the UI
+# only surfaces an update; the user chooses when.
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
 serde = { version = "1", features = ["derive"] }
 # preserve_order: serde_json::Value keeps insertion order (IndexMap) instead of
 # a sorted BTreeMap. The Tauri IPC round-trips config through Value, so without
