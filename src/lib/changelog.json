@@ -1,5 +1,12 @@
 [
   {
+    "version": "0.1.4",
+    "notes": {
+      "ja": ["「情報」タブに「更新を確認」ボタンを追加(手動で更新を確認できます)。"],
+      "en": ["Added a “Check for updates” button on the Info tab (check manually)."]
+    }
+  },
+  {
     "version": "0.1.3",
     "notes": {
       "ja": [
