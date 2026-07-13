@@ -236,6 +236,13 @@ impl JoyConHandle {
                     announced = true;
                 }
                 if handle.clone().connect_inner().await.is_ok() {
+                    // connect_inner returns Ok but bails early (no LinkUp) if the
+                    // user pressed Stop mid-scan — settle on Disconnected instead
+                    // of claiming a connection.
+                    if handle.user_disconnected.load(Ordering::SeqCst) {
+                        handle.apply_event(LinkEvent::UserDisconnect).await;
+                        break;
+                    }
                     eprintln!("[joycon] connected");
                     break;
                 }

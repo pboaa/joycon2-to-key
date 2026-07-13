@@ -88,6 +88,14 @@ impl JoyConHandle {
             .map_err(|e| e.to_string())?;
         timing.mark("subscribe");
 
+        // The scan above can take up to ~15s; the user may have pressed Stop
+        // during it (disconnect() had no peripheral to tear down yet). Honor that
+        // now instead of coming up Connected and driving input against their wish.
+        if self.user_disconnected.load(Ordering::SeqCst) {
+            let _ = peripheral.disconnect().await;
+            return Ok(());
+        }
+
         {
             let mut guard = self.peripheral.lock().await;
             *guard = Some(peripheral.clone());
