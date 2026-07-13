@@ -10,6 +10,11 @@ apps (Clip Studio, Photoshop, Blender, …).
 Built with [Tauri](https://tauri.app/) v2 + React + TypeScript. **Windows only**
 (uses the Win32 `SendInput` API).
 
+> **About the Windows warning**: the first time you run the distributed installer
+> or app, Windows SmartScreen may show a "Windows protected your PC" prompt. This
+> is expected for a personal app that isn't code-signed — click **More info** →
+> **Run anyway** to continue.
+
 ## Features
 
 - **Direct BLE connection** — connects straight to the Joy-Con 2 (L or R), with
@@ -27,8 +32,9 @@ Built with [Tauri](https://tauri.app/) v2 + React + TypeScript. **Windows only**
   direction; assign 2–8 directions plus the centre (in place) in a radial menu.
 - **Reusable definitions** — save an action once and assign it to many buttons;
   editing the definition updates every button linked to it.
-- **Idle auto-release** — after a while with no input, held keys are released
-  while the BLE link stays connected, so the next press responds instantly.
+- **Idle auto-disconnect** — after a while with no input, held keys are released
+  and the BLE link is dropped to save the Joy-Con's battery (with an optional
+  warning buzz just before). Press the sync button to reconnect when you need it.
 - **Themes** — light / dark plus color themes (matcha, hatsuyuki); can follow the system.
 
 ## Requirements
@@ -66,7 +72,7 @@ The Rust toolchain and Tauri's platform prerequisites are required — see the
 
 Everything is edited in the app. State is saved to a `workspace.json` file (app
 settings + the saved-action library + all profiles) in the per-user app data
-directory; it is written whenever you change something and is git-ignored.
+directory; it is written whenever you change something.
 
 Each button carries one assignment. Assignment types:
 
