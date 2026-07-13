@@ -35,6 +35,9 @@ interface UpdaterState {
 
   /** Silent startup check. No-op in dev or when already checked/updating. */
   checkOnStartup: () => Promise<void>;
+  /** Manual "check now" (from the UI). Re-checks regardless of a prior result
+   * and returns the outcome so the caller can give feedback. */
+  checkNow: () => Promise<"available" | "uptodate" | "error" | "busy">;
   openModal: () => void;
   closeModal: () => void;
   /** Download + install the pending update, then relaunch. */
@@ -42,8 +45,9 @@ interface UpdaterState {
 }
 
 /** True only inside the packaged desktop app. In `vite dev` / tests there's no
- * Tauri IPC, and the updater endpoint is a real GitHub URL — skip entirely. */
-function canCheck(): boolean {
+ * Tauri IPC, and the updater endpoint is a real GitHub URL — skip entirely.
+ * Exported so the UI can hide the "check for updates" button where it can't run. */
+export function canCheckUpdate(): boolean {
   return !import.meta.env.DEV && typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 }
 
@@ -57,7 +61,7 @@ export const useUpdater = create<UpdaterState>((set, get) => ({
   modalOpen: false,
 
   checkOnStartup: async () => {
-    if (!canCheck()) return;
+    if (!canCheckUpdate()) return;
     if (get().phase !== "idle") return; // already checked / in flight
     set({ phase: "checking" });
     try {
@@ -76,6 +80,34 @@ export const useUpdater = create<UpdaterState>((set, get) => ({
       // Offline / rate-limited / no release yet: stay quiet, just log.
       console.warn("[updater] check failed:", e);
       set({ phase: "uptodate" });
+    }
+  },
+
+  checkNow: async () => {
+    if (!canCheckUpdate()) return "uptodate";
+    const cur = get().phase;
+    // Don't interrupt an in-flight check or an install already under way.
+    if (cur === "checking" || cur === "downloading" || cur === "installed") return "busy";
+    set({ phase: "checking", error: null });
+    try {
+      const update = await check();
+      if (update) {
+        set({
+          phase: "available",
+          update,
+          version: update.version,
+          notes: update.body?.trim() || null,
+        });
+        return "available";
+      }
+      set({ phase: "uptodate" });
+      return "uptodate";
+    } catch (e) {
+      // A manual check failing isn't a pending update — settle on uptodate so no
+      // badge lingers, and report the error to the caller for a toast.
+      console.warn("[updater] manual check failed:", e);
+      set({ phase: "uptodate" });
+      return "error";
     }
   },
 

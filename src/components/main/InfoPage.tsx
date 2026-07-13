@@ -7,7 +7,8 @@ import {
 import { PageHeader } from "../ui/PageHeader";
 import { Button } from "../ui/Button";
 import { PAGES } from "../../lib/pages";
-import { hasPendingUpdate, useUpdater } from "../../lib/useUpdater";
+import { canCheckUpdate, hasPendingUpdate, useUpdater } from "../../lib/useUpdater";
+import { toast } from "../../lib/toast";
 import changelogData from "../../lib/changelog.json";
 
 /** Up-front disclaimer: this is a trial build, provided as-is. */
@@ -37,6 +38,13 @@ export function InfoPage() {
   const updatePending = useUpdater(hasPendingUpdate);
   const newVersion = useUpdater((s) => s.version);
   const openUpdate = useUpdater((s) => s.openModal);
+  const checking = useUpdater((s) => s.phase === "checking");
+  const onCheck = async () => {
+    const r = await useUpdater.getState().checkNow();
+    if (r === "available") useUpdater.getState().openModal();
+    else if (r === "uptodate") toast.success(t("お使いのバージョンは最新です。"));
+    else if (r === "error") toast.error(t("更新を確認できませんでした。"));
+  };
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <PageHeader
@@ -79,6 +87,17 @@ export function InfoPage() {
                   v{__APP_VERSION__}
                 </div>
               </div>
+              {canCheckUpdate() && (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="ml-auto shrink-0"
+                  onClick={onCheck}
+                  disabled={checking}
+                >
+                  {checking ? t("確認中…") : t("更新を確認")}
+                </Button>
+              )}
             </div>
             <div className="rounded-card border border-amber-500/40 bg-amber-500/10 p-3 flex gap-2">
               <IconAlertTriangle

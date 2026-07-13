@@ -791,6 +791,10 @@ export const en: Record<string, string> = {
     "Switch pages from the left nav: Key mapping / Saved actions / Stats / Settings (plus Help).",
   // ── In-app updater ──
   更新があります: "Update available",
+  更新を確認: "Check for updates",
+  "確認中…": "Checking…",
+  "お使いのバージョンは最新です。": "You're on the latest version.",
+  "更新を確認できませんでした。": "Couldn't check for updates.",
   新しいバージョンがあります: "A new version is available",
   "新しいバージョン v{{version}} があります": "Version v{{version}} is available",
   "更新は任意です。内容を確認してから更新できます。":
