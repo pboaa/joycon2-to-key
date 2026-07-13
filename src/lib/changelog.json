@@ -1,5 +1,18 @@
 [
   {
+    "version": "0.1.5",
+    "notes": {
+      "ja": [
+        "初回ツアーを改善(割り当てエディタを開いた状態で案内し、最後にキー割り当て画面へ戻ります)。",
+        "表示や文言の細かな調整。"
+      ],
+      "en": [
+        "Improved the first-run tour (guides with the editor open, and ends on the key-mapping screen).",
+        "Minor display and wording tweaks."
+      ]
+    }
+  },
+  {
     "version": "0.1.4",
     "notes": {
       "ja": ["「情報」タブに「更新を確認」ボタンを追加(手動で更新を確認できます)。"],
