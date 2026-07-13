@@ -777,8 +777,8 @@ export const en: Record<string, string> = {
     "A single action only sends a key/mouse “chord” (keys pressed together). It never types keys in sequence or runs commands.",
   "扱えるのは、あらかじめ許可されたキーとマウス操作に限られます。":
     "Only pre-allowed keys and mouse actions can be used.",
-  "これはテスト・試用版です。コードに悪意はありませんが、無保証・自己責任でご利用ください。":
-    "This is a test / trial version. There's no malice in the code, but use it without warranty and at your own risk.",
+  "これは早期リリースです。無保証・自己責任でご利用ください。":
+    "This is an early release. It's provided without warranty — use it at your own risk.",
   "更新や不具合の修正を約束するものではありません。":
     "It makes no promise of updates or bug fixes.",
   "本ソフトの使用によって生じた損害について、作者は責任を負いません。":

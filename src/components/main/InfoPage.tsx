@@ -13,7 +13,7 @@ import changelogData from "../../lib/changelog.json";
 
 /** Up-front disclaimer: this is a trial build, provided as-is. */
 const DISCLAIMER = [
-  "これはテスト・試用版です。コードに悪意はありませんが、無保証・自己責任でご利用ください。",
+  "これは早期リリースです。無保証・自己責任でご利用ください。",
   "本ソフトの使用によって生じた損害について、作者は責任を負いません。",
   "更新や不具合の修正を約束するものではありません。",
 ];
