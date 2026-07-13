@@ -134,6 +134,21 @@ export function useDefinitionSync(
   // Reset the library back to the bundled presets (the fresh-install state).
   // Buttons keep the keys they already have — only the (now-dangling) link to a
   // definition is dropped, exactly as when a single definition is deleted.
+  // The actual seed-and-relink, without the confirm. Shared by the definitions
+  // page's own "初期化" and the settings "reset everything" (which resets
+  // profiles too and confirms once, up front).
+  const resetAllCore = async () => {
+    const seeded = await resetDefinitions();
+    // Unlink every button that referenced an old definition, keeping its last
+    // cached keys so it still works.
+    if (config) {
+      const ids = new Set(definitions.map((d) => d.id));
+      const cv = unlinkAssignments(config, ids);
+      if (cv) setConfig(cv);
+    }
+    lib.replaceAll(seeded.groups, seeded.definitions);
+  };
+
   const resetAll = async () => {
     if (
       !(await confirmReset(confirm, t, {
@@ -144,15 +159,7 @@ export function useDefinitionSync(
       }))
     )
       return;
-    const seeded = await resetDefinitions();
-    // Unlink every button that referenced an old definition, keeping its last
-    // cached keys so it still works.
-    if (config) {
-      const ids = new Set(definitions.map((d) => d.id));
-      const cv = unlinkAssignments(config, ids);
-      if (cv) setConfig(cv);
-    }
-    lib.replaceAll(seeded.groups, seeded.definitions);
+    await resetAllCore();
   };
 
   const sync = (defId: string, map: (a: ButtonAssignment) => ButtonAssignment) => {
@@ -258,6 +265,7 @@ export function useDefinitionSync(
     removeGroupWithDefs,
     reorderGroups: lib.reorderGroups,
     resetAll,
+    resetAllCore,
     updatePress,
     rename,
     remove,

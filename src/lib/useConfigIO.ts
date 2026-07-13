@@ -14,7 +14,8 @@ export function useConfigIO(opts: { reset: () => Promise<void> }) {
     if (
       await confirmReset(confirm, t, {
         title: "初期化の確認",
-        message: "config を初期状態にリセットしますか？",
+        message:
+          "すべて（プロファイル・キー割り当て・保存した操作）を初期状態に戻しますか？この操作は取り消せません。",
         okLabel: "初期化",
       })
     ) {

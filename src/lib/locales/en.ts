@@ -580,7 +580,8 @@ export const en: Record<string, string> = {
   "使用回数（累計）": "Times used (all-time)",
   "インポート失敗: {{error}}": "Import failed: {{error}}",
   初期化の確認: "Confirm reset",
-  "config を初期状態にリセットしますか？": "Reset config to defaults?",
+  "すべて（プロファイル・キー割り当て・保存した操作）を初期状態に戻しますか？この操作は取り消せません。":
+    "Reset everything (profiles, key mappings, and saved actions) to defaults? This can't be undone.",
   未設定: "Unassigned",
 
   // ── Action editor (press type / input / pie / layer hold) ──

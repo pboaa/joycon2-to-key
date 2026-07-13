@@ -34,9 +34,6 @@ export function MainScreen({ joyCon }: Props) {
   const config = useStore((s) => s.profiles);
   const setConfig = useStore((s) => s.setProfiles);
   const resetProfilesToDefault = useStore((s) => s.resetProfilesToDefault);
-  const reset = useCallback(async () => {
-    await resetProfilesToDefault();
-  }, [resetProfilesToDefault]);
 
   // Profile settings (name + matched apps) — a modal now that profiles have no
   // dedicated page. Edits the selected profile. `isNew` marks the ＋-created
@@ -50,6 +47,12 @@ export function MainScreen({ joyCon }: Props) {
   const selection = useSelection(config, joyCon.activeLayer, !!profileSettings);
   const actions = useConfigActions(config, setConfig, selection);
   const defs = useDefinitionSync(config, setConfig);
+  // "Reset everything" (settings → Manage) means a fresh install: profiles AND
+  // the saved-operations library both go back to the bundled defaults.
+  const reset = useCallback(async () => {
+    await resetProfilesToDefault();
+    await defs.resetAllCore();
+  }, [resetProfilesToDefault, defs]);
   const { settings, updateSettings } = useSettings();
   useTheme(settings.theme);
   useUiScale(settings.uiScale);
