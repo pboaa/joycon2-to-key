@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      # Locale keys stay in sync (JA source ⇄ en.ts), types pass, tests pass.
+      - run: npm run check:locales
+      - run: npm run check
+
+  # The Rust side is Windows-only (Win32 SendInput + windows crates), so it must
+  # build on a Windows runner. Builds the frontend first so tauri-build finds
+  # ../dist. No fmt/clippy gate yet — the tree isn't rustfmt-clean.
+  rust:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: npm ci
+      - run: npm run build
+      - name: cargo build
+        working-directory: src-tauri
+        run: cargo build --locked
+      - name: cargo test
+        working-directory: src-tauri
+        run: cargo test --locked

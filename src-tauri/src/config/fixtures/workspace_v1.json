@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "settings": {
+    "idleEnabled": true,
+    "idleTimeoutSecs": 600,
+    "pieThreshold": 20,
+    "scrollAmount": 120,
+    "theme": "dark",
+    "language": "ja",
+    "connectVibration": 1,
+    "playerLeds": 1,
+    "stickDeadzone": 30
+  },
+  "definitions": {
+    "version": 1,
+    "groups": [
+      { "id": "grp-1", "name": "編集" }
+    ],
+    "definitions": [
+      {
+        "id": "def-1",
+        "name": "コピー",
+        "group": "grp-1",
+        "press": {
+          "type": "input",
+          "mode": "tap",
+          "label": "コピー",
+          "inputs": [
+            { "type": "keyboard", "value": "Ctrl" },
+            { "type": "keyboard", "value": "C" }
+          ]
+        }
+      }
+    ]
+  },
+  "pieMenus": [],
+  "profiles": {
+    "デフォルト": {
+      "matchApps": [],
+      "initialLayer": "デフォルト",
+      "layers": {
+        "デフォルト": {
+          "buttons": {
+            "a": {
+              "press": {
+                "type": "input",
+                "mode": "tap",
+                "label": "左クリック",
+                "inputs": [{ "type": "mouseButton", "value": "left", "double": false }]
+              }
+            },
+            "sl": {
+              "press": {
+                "type": "input",
+                "mode": "toggle",
+                "label": "Ctrl固定",
+                "inputs": [{ "type": "keyboard", "value": "Ctrl" }]
+              }
+            },
+            "sr": {
+              "press": {
+                "type": "input",
+                "mode": "tap",
+                "label": "連打Space",
+                "repeatMs": 60,
+                "inputs": [{ "type": "keyboard", "value": "Space" }]
+              }
+            },
+            "zl": {
+              "press": {
+                "type": "layerHold",
+                "label": "マウス操作へ",
+                "layer": "マウス",
+                "inputs": []
+              }
+            },
+            "capture": {
+              "press": {
+                "type": "pie",
+                "label": "パイ",
+                "slices": [
+                  { "angle": 0, "inputs": [{ "type": "keyboard", "value": "PageUp" }] },
+                  { "angle": 180, "inputs": [{ "type": "keyboard", "value": "PageDown" }] }
+                ]
+              }
+            }
+          },
+          "inherit": "all"
+        },
+        "マウス": {
+          "buttons": {
+            "up": {
+              "press": {
+                "type": "input",
+                "mode": "tap",
+                "label": "左クリック",
+                "inputs": [{ "type": "mouseButton", "value": "left", "double": false }]
+              }
+            }
+          },
+          "inherit": "modifiers",
+          "stickMouse": true,
+          "stickMouseSpeed": 12
+        }
+      }
+    },
+    "chrome": {
+      "matchApps": ["chrome.exe"],
+      "initialLayer": "デフォルト",
+      "layers": {
+        "デフォルト": {
+          "buttons": {
+            "x": {
+              "def": "def-1",
+              "press": {
+                "type": "input",
+                "mode": "tap",
+                "label": "コピー",
+                "inputs": [{ "type": "def", "def": "def-1" }]
+              }
+            }
+          },
+          "inherit": "all"
+        }
+      }
+    }
+  }
+}

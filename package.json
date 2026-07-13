@@ -1,0 +1,46 @@
+{
+  "name": "joycon2-to-key",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Map Nintendo Switch 2 Joy-Con (Joy-Con 2) BLE input to Windows keyboard and mouse actions.",
+  "license": "GPL-3.0-or-later",
+  "author": "pboaa",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -p tsconfig.build.json && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "check": "tsc --noEmit && vitest run",
+    "check:locales": "node scripts/check-locales.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "gen:thirdparty": "node scripts/gen-thirdparty.mjs",
+    "gen:icon-tags": "node scripts/gen-icon-tags.mjs"
+  },
+  "dependencies": {
+    "@tabler/icons-react": "^3.44.0",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "clsx": "^2.1.1",
+    "i18next": "^26.3.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-i18next": "^17.0.8",
+    "tailwind-merge": "^3.6.0",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@tauri-apps/cli": "^2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "tailwindcss": "^4.0.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4",
+    "vitest": "^4.1.10"
+  }
+}

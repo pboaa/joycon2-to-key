@@ -1,0 +1,37 @@
+name: Release
+
+# Push a version tag (e.g. v0.1.0) to build the Windows installer and attach it
+# to a DRAFT GitHub Release. Or run manually (workflow_dispatch) to smoke-test
+# the build. Draft + tag trigger means nothing goes public until you publish the
+# release yourself — safe to try on a private repo first.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - run: npm ci
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # On a tag push these resolve to the tag; on manual runs, to the branch
+          # (a build-only smoke test — the draft it makes can just be discarded).
+          tagName: ${{ github.ref_name }}
+          releaseName: "JoyCon2 to Key ${{ github.ref_name }}"
+          releaseDraft: true
+          prerelease: false

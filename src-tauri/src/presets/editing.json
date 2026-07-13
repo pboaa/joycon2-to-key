@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "kind": "joycon-definitions",
+  "name": "編集ショートカット",
+  "definitions": [
+    {
+      "name": "元に戻す",
+      "group": "編集",
+      "press": {
+        "type": "input",
+        "mode": "tap",
+        "inputs": [
+          { "type": "keyboard", "value": "Ctrl" },
+          { "type": "keyboard", "value": "Z" }
+        ]
+      }
+    },
+    {
+      "name": "やり直し",
+      "group": "編集",
+      "press": {
+        "type": "input",
+        "mode": "tap",
+        "inputs": [
+          { "type": "keyboard", "value": "Ctrl" },
+          { "type": "keyboard", "value": "Y" }
+        ]
+      }
+    }
+  ]
+}

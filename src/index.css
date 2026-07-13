@@ -1,0 +1,287 @@
+@import "tailwindcss";
+
+/* ─── デザイントークン（セマンティックトークン） ─────────────────────────────
+   `bg-bg` / `text-text` / `border-border` などのユーティリティを生む @theme。
+   既定値は「ライト」。ダークは下の `html.dark` で生トークン・color トークンとも
+   上書きする（テーマの鍵は既存の `.dark` クラスのまま）。 */
+@theme {
+  /* 背景 */
+  --color-bg: #f5f5f8;
+  --color-bg2: #ffffff;
+  --color-bg3: #ececf2;
+  --color-border: #d6d6e2;
+
+  /* テキスト。text3（三次・補足/キャプション）はコントラスト監査で白地 2.7:1 と
+     WCAG AA(4.5) 未達だったため、階層(text2 より薄い)は保ちつつ AA 圏へ寄せた
+     （旧 #9494ac → #727289, 白地 4.68:1）。 */
+  --color-text: #1c1c28;
+  --color-text2: #5a5a72;
+  --color-text3: #727289;
+
+  /* アクセント / 状態。ライトは少し軽やかなインディゴ（濃すぎない）。白文字が
+     載るボタン地・白背景のアクセント文字の両方で読めるよう調整。 */
+  --color-accent: #6366f1;
+  --color-accent2: #4f52e5;
+  --color-danger: #d24747;
+
+  /* ステータス色（テーマ非依存の意味色）。warn＝接続中/警告(amber系)、
+     ok＝接続済み(emerald系)。ライト既定・ダークは html.dark で明るめに上書き
+     （旧: `text-amber-600 dark:text-amber-400` を `text-warn` 1つに集約）。 */
+  --color-warn: #d97706;
+  --color-ok: #059669;
+  /* モーダル等の縁ハイライト。ライトは黒み・ダークは白みの極薄リング
+     （旧: `ring-black/5 dark:ring-white/5` を `ring-edge` に集約）。 */
+  --color-edge: rgba(0, 0, 0, 0.05);
+
+  --radius: 8px;
+
+  /* 用途別の角丸トークン：行・ボタン・入力＝row(8px)、カード・パネル・モーダル
+     ＝card(12px)。`rounded-row` / `rounded-card` として使う。余裕のある見た目へ
+     底上げ（旧: row=6 / card=8）。 */
+  --radius-row: 8px;
+  --radius-card: 12px;
+
+  /* UI 文字スケール（設定→一般）。既定 1＝無変化。実行時に html の inline style
+     で上書きすると、下のフォントサイズトークンが calc で一括拡大する。列幅・余白は
+     固定 px のままなので、拡大は文字のみ（固定列レイアウトを崩さない安全側）。 */
+  --ui-scale: 1;
+
+  /* 用途別のフォントサイズトークン。整った階層 micro(9) < caption(10) <
+     label(11) < body(12) < heading(14) < title(16)。行間・余白の余裕は保ちつつ
+     字面は一段小さめに（一度 13/15/17 まで上げたのを各-1px 戻した）。
+     micro＝「既定」マーカーや ▾ 等の極小要素、heading＝カード/小見出し。
+     各サイズは --ui-scale 倍（既定 1）で、文字スケール設定に追従する。 */
+  --text-micro: calc(var(--ui-scale) * 9px);
+  --text-micro--line-height: 1.4;
+  --text-caption: calc(var(--ui-scale) * 10px);
+  --text-caption--line-height: 1.5;
+  --text-label: calc(var(--ui-scale) * 11px);
+  --text-label--line-height: 1.5;
+  --text-body: calc(var(--ui-scale) * 12px);
+  --text-body--line-height: 1.6;
+  --text-heading: calc(var(--ui-scale) * 14px);
+  --text-heading--line-height: 1.3;
+  --text-title: calc(var(--ui-scale) * 16px);
+  --text-title--line-height: 1.3;
+
+  --font-sans:
+    "Segoe UI", "Yu Gothic UI", "Meiryo", "Hiragino Sans", system-ui,
+    "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+
+  /* 影トークン。pop＝ドロップダウン/コンテキストメニュー等の浮き、modal＝モーダル
+     ダイアログの深い影。`shadow-pop` / `shadow-modal` として使う（旧: 各所に
+     直書きしていた同一の box-shadow を集約）。 */
+  --shadow-pop: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-modal: 0 24px 64px -16px rgba(0, 0, 0, 0.7);
+}
+
+/* ライト（既定）の生トークン。手書き CSS（スクロールバー/ツールチップ等）用。 */
+:root {
+  --bg: #f5f5f8;
+  --bg2: #ffffff;
+  --bg3: #ececf2;
+  --border: #d6d6e2;
+  --text: #1c1c28;
+  --text2: #5a5a72;
+  --text3: #727289;
+  --accent: #6366f1;
+  --accent2: #4f52e5;
+  --danger: #d24747;
+  --radius: 8px;
+
+  /* ─ z-index 台帳（重なり順）─ 数値の散在を防ぐため一元管理。使う側は
+     `z-[var(--z-modal)]` 等で参照。低い順:
+       modal(50)      … 通常のモーダル本体(ModalShell)
+       modal-top(60)  … モーダルの上に重ねる派生モーダル
+       overlay(70)    … 確認ダイアログ・ツアー・Select ドロップダウン(モーダル上に出る)
+       menu(80)       … 右クリック等のコンテキストメニュー
+       toast(200)     … 操作フィードバック(モーダル/メニュー上に出るが tooltip の下)
+       tooltip(300)   … ツールチップ(常に最前面) */
+  --z-modal: 50;
+  --z-modal-top: 60;
+  --z-overlay: 70;
+  --z-menu: 80;
+  --z-toast: 200;
+  --z-tooltip: 300;
+
+  /* オーバーレイ入場アニメの標準尺（モーダル/メニュー/ドロップダウン/確認）。 */
+  --duration-pop: 140ms;
+}
+
+/* ダーク：生トークン（--*）と Tailwind トークン（--color-*）の両方を上書き。
+   `html.dark` は :root / @theme より高 specificity なので確実に勝つ。
+   パレット値はダーク基調（#16161c 系）。 */
+html.dark {
+  --bg: #16161c;
+  --bg2: #1f1f27;
+  --bg3: #272730;
+  --border: #32324a;
+  --text: #eeeef6;
+  /* text2/text3 をコントラスト監査で底上げ（旧 #8080a0/#5a5a80 は AA 未達）。
+     text2 #9494b8(bg2 5.6:1)・text3 #7676a0(bg2 3.8:1、UI/大文字 AA 圏)。 */
+  --text2: #9494b8;
+  --text3: #7676a0;
+  --accent: #6e71e6;
+  --accent2: #5858e0;
+  --danger: #e05c5c;
+
+  --color-bg: #16161c;
+  --color-bg2: #1f1f27;
+  --color-bg3: #272730;
+  --color-border: #32324a;
+  --color-text: #eeeef6;
+  --color-text2: #9494b8;
+  --color-text3: #7676a0;
+  --color-accent: #6e71e6;
+  --color-accent2: #5858e0;
+  --color-danger: #e05c5c;
+
+  /* ステータス色・縁ハイライトはダーク基調で明るめ／白みに（抹茶猫も .dark を
+     継ぐのでこの値を共有する）。 */
+  --color-warn: #fbbf24;
+  --color-ok: #34d399;
+  --color-edge: rgba(255, 255, 255, 0.05);
+}
+
+/* 抹茶猫：抹茶グリーンのダーク基調。`.dark` も付く（dark:true）ので html.dark を
+   継いだうえで、data-theme 属性セレクタでパレットを上書きする（同 specificity・
+   後勝ち）。テーマ追加はこのブロックと themes.ts の1行だけで済む。 */
+html[data-theme="matcha"] {
+  --bg: #171c13;
+  --bg2: #1f261a;
+  --bg3: #283023;
+  --border: #3c4a34;
+  --text: #edf2e3;
+  --text2: #9aa98a;
+  /* text3 を AA 圏へ（旧 #667559 は地色 2.8:1）。#7d8c6d, bg2 4.3:1。 */
+  --text3: #7d8c6d;
+  --accent: #78a04d;
+  --accent2: #62863c;
+  --danger: #e0705c;
+
+  --color-bg: #171c13;
+  --color-bg2: #1f261a;
+  --color-bg3: #283023;
+  --color-border: #3c4a34;
+  --color-text: #edf2e3;
+  --color-text2: #9aa98a;
+  --color-text3: #7d8c6d;
+  --color-accent: #78a04d;
+  --color-accent2: #62863c;
+  --color-danger: #e0705c;
+}
+
+/* 初雪：白×青の明るいテーマ。dark:false なので `.dark` は付かず、ライト基調の
+   @theme 既定を data-theme 属性セレクタで雪景色のパレットに上書きする。 */
+html[data-theme="hatsuyuki"] {
+  --bg: #eef4fb;
+  --bg2: #ffffff;
+  --bg3: #dfe9f5;
+  --border: #c5d6e8;
+  --text: #16283c;
+  --text2: #4b6480;
+  /* text3 を AA 圏へ（旧 #86a0bb は白地 2.7:1 と薄すぎ）。#6b839e, bg2 3.9:1。 */
+  --text3: #6b839e;
+  --accent: #3d51b7;
+  --accent2: #283886;
+  --danger: #d1504f;
+
+  --color-bg: #eef4fb;
+  --color-bg2: #ffffff;
+  --color-bg3: #dfe9f5;
+  --color-border: #c5d6e8;
+  --color-text: #16283c;
+  --color-text2: #4b6480;
+  --color-text3: #6b839e;
+  --color-accent: #3d51b7;
+  --color-accent2: #283886;
+  --color-danger: #d1504f;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  /* クラス無しの既定テキストの基準。字面を一段小さめに戻して 13px。 */
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-user-select: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* The app-wide `user-select: none` (native-app feel) otherwise blocks dragging
+   to select text inside form fields; re-enable it where the user is typing. */
+input,
+textarea,
+[contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Custom scrollbars: slim, rounded, theme-aware via tokens. */
+* {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--border) transparent;
+}
+*::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text3);
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Feedback while grab-scrolling. */
+body.dragscroll-active,
+body.dragscroll-active * {
+  cursor: grabbing !important;
+}
+
+/* ─── モーション ───────────────────────────────────────────────────────────
+   オーバーレイ（モーダル/メニュー/ドロップダウン/確認）の入場。fade＋わずかな
+   scale で「ふわっ」と出す。尺は --duration-pop で一括管理。 */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.animate-pop-in {
+  animation: pop-in var(--duration-pop) ease-out;
+}
+
+/* prefers-reduced-motion: reduce ですべてのアニメ/トランジションを実質無効化。
+   モーション過敏なユーザーに配慮（1か所で一括）。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
