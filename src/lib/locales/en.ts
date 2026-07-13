@@ -788,4 +788,20 @@ export const en: Record<string, string> = {
     "Reset actions to the initial presets? Actions already assigned to buttons stay; only their links to actions are removed.",
   "左のナビでページを切り替えます：キー割り当て／保存した操作／統計／設定（＋ヘルプ）。":
     "Switch pages from the left nav: Key mapping / Saved actions / Stats / Settings (plus Help).",
+  // ── In-app updater ──
+  更新があります: "Update available",
+  新しいバージョンがあります: "A new version is available",
+  "新しいバージョン v{{version}} があります": "Version v{{version}} is available",
+  "更新は任意です。内容を確認してから更新できます。":
+    "Updating is optional — review what's new before you update.",
+  更新内容を見る: "See what's new",
+  現在: "Current",
+  更新内容: "What's new",
+  更新する: "Update",
+  後で: "Later",
+  "ダウンロード中…": "Downloading…",
+  "ダウンロード中… {{pct}}%": "Downloading… {{pct}}%",
+  "再起動しています…": "Restarting…",
+  "更新に失敗しました。時間をおいて、もう一度お試しください。":
+    "The update failed. Please wait a moment and try again.",
 };

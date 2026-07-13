@@ -1,7 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { IconAlertTriangle, IconDeviceGamepad2 } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconDeviceGamepad2,
+  IconSparkles,
+} from "@tabler/icons-react";
 import { PageHeader } from "../ui/PageHeader";
+import { Button } from "../ui/Button";
 import { PAGES } from "../../lib/pages";
+import { hasPendingUpdate, useUpdater } from "../../lib/useUpdater";
 import changelogData from "../../lib/changelog.json";
 
 /** Up-front disclaimer: this is a trial build, provided as-is. */
@@ -28,6 +34,9 @@ export function InfoPage() {
   const { t, i18n } = useTranslation();
   const lang: "ja" | "en" = i18n.language.startsWith("en") ? "en" : "ja";
   const meta = PAGES.info;
+  const updatePending = useUpdater(hasPendingUpdate);
+  const newVersion = useUpdater((s) => s.version);
+  const openUpdate = useUpdater((s) => s.openModal);
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <PageHeader
@@ -37,6 +46,27 @@ export function InfoPage() {
       />
       <div className="flex-1 min-h-0 overflow-y-auto [scrollbar-gutter:stable] p-4">
         <div className="max-w-[640px] mx-auto space-y-5">
+          {/* An available update, surfaced (not forced): read the notes / update
+              from the modal. */}
+          {updatePending && (
+            <section className="rounded-card border border-accent/40 bg-accent/10 p-3 flex items-center gap-3">
+              <IconSparkles size={18} className="shrink-0 text-accent" aria-hidden />
+              <div className="min-w-0 flex-1">
+                <div className="text-body font-semibold text-text">
+                  {t("新しいバージョン v{{version}} があります", {
+                    version: newVersion ?? "",
+                  })}
+                </div>
+                <div className="text-caption text-text3">
+                  {t("更新は任意です。内容を確認してから更新できます。")}
+                </div>
+              </div>
+              <Button variant="primary" size="sm" onClick={openUpdate}>
+                {t("更新内容を見る")}
+              </Button>
+            </section>
+          )}
+
           {/* Identity + version, then the up-front disclaimer. */}
           <section className="space-y-2">
             <div className="flex items-center gap-3">

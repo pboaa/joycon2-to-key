@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import type { ConnectionState } from "../../lib/types";
 import { NAV_FOOTER_PAGES, NAV_GROUPS, PAGES } from "../../lib/pages";
 import { type AppPage } from "../../store";
+import { hasPendingUpdate, useUpdater } from "../../lib/useUpdater";
 import { ConnectionToggle } from "./ConnectionToggle";
 
 export type { AppPage };
@@ -23,6 +24,7 @@ export function AppNav({
   onDisconnect: () => void;
 }) {
   const { t } = useTranslation();
+  const updatePending = useUpdater(hasPendingUpdate);
 
   return (
     <div className="shrink-0 w-[168px] h-full flex flex-col border-r border-border bg-bg2">
@@ -93,6 +95,13 @@ export function AppNav({
               >
                 <meta.Icon size={15} strokeWidth={2} className="shrink-0" aria-hidden />
                 {t(meta.label)}
+                {id === "info" && updatePending && (
+                  <span
+                    className="ml-auto shrink-0 w-1.5 h-1.5 rounded-full bg-accent"
+                    aria-label={t("更新があります")}
+                    title={t("更新があります")}
+                  />
+                )}
               </button>
             );
             return last ? (
