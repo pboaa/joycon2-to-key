@@ -2,11 +2,20 @@
 
 *English: [README.en.md](README.en.md)*
 
+[![最新リリース](https://img.shields.io/github/v/release/pboaa/joycon2-to-key)](https://github.com/pboaa/joycon2-to-key/releases/latest)
+[![ライセンス](https://img.shields.io/github/license/pboaa/joycon2-to-key)](LICENSE)
+
 **Nintendo Switch 2 の Joy-Con（Joy-Con 2）**を Windows の片手ショートカット
 パッドとして使うデスクトップアプリです。ボタン・スティックを、キーボード
 ショートカット / マウスクリック / スクロールに Bluetooth LE 経由で割り当て
 られます。お絵描き・クリエイティブ系アプリ（Clip Studio、Photoshop、Blender
 など）の左手デバイスとして便利です。
+
+![JoyCon2 to Key の画面](docs/screenshot.png)
+
+## ダウンロード
+
+Windows 用インストーラは **[最新リリース（Releases）](https://github.com/pboaa/joycon2-to-key/releases/latest)** から入手できます（`JoyCon2.to.Key_*_x64-setup.exe` をダウンロードして実行）。一度インストールすれば、以降はアプリ内の自動更新で最新版に保てます。
 
 [Tauri](https://tauri.app/) v2 + React + TypeScript 製。**Windows 専用**
 （Win32 の `SendInput` API を使用）。

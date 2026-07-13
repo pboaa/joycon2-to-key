@@ -2,10 +2,19 @@
 
 *日本語: [README.md](README.md)*
 
+[![Latest release](https://img.shields.io/github/v/release/pboaa/joycon2-to-key)](https://github.com/pboaa/joycon2-to-key/releases/latest)
+[![License](https://img.shields.io/github/license/pboaa/joycon2-to-key)](LICENSE)
+
 Use a **Nintendo Switch 2 Joy-Con (Joy-Con 2)** as a one-handed shortcut pad on
 Windows — map its buttons and stick to keyboard shortcuts, mouse clicks, and
 scrolling over Bluetooth LE. Handy as a left-hand device for drawing / creative
 apps (Clip Studio, Photoshop, Blender, …).
+
+![JoyCon2 to Key screenshot](docs/screenshot.png)
+
+## Download
+
+Grab the Windows installer from the **[latest release](https://github.com/pboaa/joycon2-to-key/releases/latest)** (`JoyCon2.to.Key_*_x64-setup.exe`). Once installed, the app keeps itself up to date via the in-app updater.
 
 Built with [Tauri](https://tauri.app/) v2 + React + TypeScript. **Windows only**
 (uses the Win32 `SendInput` API).
