@@ -1,5 +1,18 @@
 [
   {
+    "version": "0.1.2",
+    "notes": {
+      "ja": [
+        "アイコンが見つからないときに空欄ではなくプレースホルダを表示するように。",
+        "アップデートの通知とエラー時の再試行をより確実に。"
+      ],
+      "en": [
+        "Missing icons now show a placeholder instead of a blank slot.",
+        "More reliable update notifications and retry after an error."
+      ]
+    }
+  },
+  {
     "version": "0.1.1",
     "notes": {
       "ja": [
