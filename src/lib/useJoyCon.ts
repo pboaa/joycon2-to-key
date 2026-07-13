@@ -69,10 +69,17 @@ export function useJoyCon(): JoyConHook {
       // is handled by the backend (after post-connect init) per the
       // connect_vibration setting, so it's not handled here.
       playSound(settings.connectSound);
+      manualDisconnect.current = false;
     } else if (prev === "connected") {
       // "connected → anything else" = the connection was lost (auto-disconnect / link drop).
       if (manualDisconnect.current) manualDisconnect.current = false;
       else playSound(settings.disconnectSound);
+    } else {
+      // A transition between non-connected states (e.g. reconnecting →
+      // disconnected after Stop mid-scan): the manual-disconnect flag can't
+      // apply here, so drop it — otherwise it would linger and wrongly suppress
+      // the sound on a later genuine connected → disconnected drop.
+      manualDisconnect.current = false;
     }
   }, [connectionState]);
 
