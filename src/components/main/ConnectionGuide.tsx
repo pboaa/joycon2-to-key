@@ -12,10 +12,13 @@ const DISMISS_KEY = "joycon.connGuideDismissed";
 export function ConnectionGuide() {
   const { t } = useTranslation();
   const cs = useStore((s) => s.connectionState);
+  const tourActive = useStore((s) => s.tourActive);
   const [dismissed, setDismissed] = useState(
     () => !!localStorage.getItem(DISMISS_KEY),
   );
-  if (cs === "connected" || dismissed) return null;
+  // The guided tour spotlights this banner, so always show it while the tour
+  // runs (even if connected / previously dismissed).
+  if (!tourActive && (cs === "connected" || dismissed)) return null;
 
   const dismiss = () => {
     localStorage.setItem(DISMISS_KEY, "1");
@@ -23,7 +26,10 @@ export function ConnectionGuide() {
   };
 
   return (
-    <div className="shrink-0 mx-2 mt-2 flex items-start gap-2.5 rounded-card border border-accent/30 bg-accent/8 px-3 py-2">
+    <div
+      data-tour="conn-guide"
+      className="shrink-0 mx-2 mt-2 flex items-start gap-2.5 rounded-card border border-accent/30 bg-accent/8 px-3 py-2"
+    >
       <IconBluetooth size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
       <div className="min-w-0 flex-1 space-y-0.5 text-label leading-relaxed">
         <p className="font-semibold text-text">{t("Joy-Con 2 を接続するには")}</p>

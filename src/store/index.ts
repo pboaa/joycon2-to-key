@@ -87,6 +87,10 @@ export interface StoreState {
   battery: BatteryInfo | null;
   joyConError: string | null;
 
+  /** True while the guided tour is running (lets onboarding-only UI, e.g. the
+   * connection guide, show regardless of its normal conditions). Not persisted. */
+  tourActive: boolean;
+
   // ── Actions ──
   hydrate: (ws: WorkspaceFile, path: string) => void;
   setProfiles: (next: AppConfig) => void;
@@ -107,6 +111,7 @@ export interface StoreState {
   setActiveLayer: (al: ActiveLayer | null) => void;
   setBattery: (b: BatteryInfo | null) => void;
   setJoyConError: (e: string | null) => void;
+  setTourActive: (v: boolean) => void;
 }
 
 export const useStore = create<StoreState>((set, get) => ({
@@ -141,6 +146,7 @@ export const useStore = create<StoreState>((set, get) => ({
   activeLayer: null,
   battery: null,
   joyConError: null,
+  tourActive: false,
 
   hydrate: (ws, path) =>
     set({
@@ -197,6 +203,7 @@ export const useStore = create<StoreState>((set, get) => ({
   setActiveLayer: (al) => set({ activeLayer: al }),
   setBattery: (b) => set({ battery: b }),
   setJoyConError: (e) => set({ joyConError: e }),
+  setTourActive: (v) => set({ tourActive: v }),
 }));
 
 // ─── Persistence (debounced save of profile/settings/definition changes) ─────────

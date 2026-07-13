@@ -703,6 +703,9 @@ export const en: Record<string, string> = {
   "④ 保存した操作": "④ Saved actions",
   "⑤ 統計": "⑤ Stats",
   "⑥ 設定・バックアップ": "⑥ Settings & backup",
+  準備完了: "You're all set",
+  "さっそくボタンにキーや操作を割り当ててみましょう。":
+    "Go ahead and assign a key or action to a button.",
   "起動後は自動で接続を待ちます。Joy-Con 2 のシンクボタンでつながります（未接続でも割り当ては作れます）。":
     "It waits for a connection automatically on launch; connect with the Joy-Con 2's sync button (you can build assignments even while disconnected).",
   "中央の図でボタンをクリックして選びます。":

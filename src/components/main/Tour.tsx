@@ -11,9 +11,16 @@ import { Button } from "../ui/Button";
 interface Step {
   page?: AppPage;
   target?: string;
+  /** Pre-select this figure button so the right editor panel shows real content
+   * (not the empty "pick a button" state) while the step is shown. */
+  select?: string;
   title: string;
   body: string;
 }
+
+// "left" carries a default assignment (元に戻す / Ctrl+Z) and is on the left pad
+// shown by default, so selecting it makes the figure + editor demo meaningful.
+const DEMO_BUTTON = "left";
 
 const STEPS: Step[] = [
   {
@@ -21,7 +28,8 @@ const STEPS: Step[] = [
     body: "主な画面をさっと案内します（スキップ可）。",
   },
   {
-    target: "connect",
+    page: "keys",
+    target: "conn-guide",
     title: "① 接続",
     body: "起動後は自動で接続を待ちます。Joy-Con 2 のシンクボタンでつながります（未接続でも割り当ては作れます）。",
   },
@@ -29,12 +37,14 @@ const STEPS: Step[] = [
   {
     page: "keys",
     target: "figure",
+    select: DEMO_BUTTON,
     title: "② ボタンを選ぶ",
     body: "中央の図でボタンをクリックして選びます。",
   },
   {
     page: "keys",
     target: "editor",
+    select: DEMO_BUTTON,
     title: "③ 割り当てる",
     body: "右のパネルでキー入力・操作・パイなどを割り当てます。",
   },
@@ -62,6 +72,13 @@ const STEPS: Step[] = [
     title: "ヘルプ",
     body: "困ったらここへ。ツアーもここから再開できます。",
   },
+  // End back on the key-assignment page, ready to go.
+  {
+    page: "keys",
+    select: DEMO_BUTTON,
+    title: "準備完了",
+    body: "さっそくボタンにキーや操作を割り当ててみましょう。",
+  },
 ];
 
 const GAP = 12;
@@ -72,15 +89,26 @@ const CARD_W = 300;
 export function Tour({ onClose }: { onClose: () => void }) {
   const { t } = useTranslation();
   const navigate = useStore((s) => s.navigate);
+  const setSelectedButton = useStore((s) => s.setSelectedButton);
+  const setTourActive = useStore((s) => s.setTourActive);
   const [i, setI] = useState(0);
   const [rect, setRect] = useState<DOMRect | null>(null);
   const step = STEPS[i];
   const last = i === STEPS.length - 1;
 
-  // Navigate to the step's page (nav targets stay put, so no re-measure race).
+  // Mark the tour active for its whole lifetime, so onboarding-only UI (the
+  // connection guide) shows even when it normally wouldn't.
+  useEffect(() => {
+    setTourActive(true);
+    return () => setTourActive(false);
+  }, [setTourActive]);
+
+  // Navigate to the step's page, and pre-select its demo button (so the editor
+  // panel shows real content). nav targets stay put, so no re-measure race.
   useEffect(() => {
     if (step.page) navigate(step.page);
-  }, [i, step.page, navigate]);
+    if (step.select) setSelectedButton(step.select);
+  }, [i, step.page, step.select, navigate, setSelectedButton]);
 
   // Measure the spotlight target after layout; keep it fresh on resize.
   useLayoutEffect(() => {
