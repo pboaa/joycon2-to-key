@@ -105,19 +105,33 @@ export const useUpdater = create<UpdaterState>((set, get) => ({
             break;
         }
       });
-      set({ phase: "installed" });
-      // On Windows/NSIS the installer runs on exit; relaunch brings the new
-      // version back up. If relaunch throws, the install still applied.
-      await relaunch();
     } catch (e) {
+      // Only download/install failures are real failures the user should retry.
       console.error("[updater] install failed:", e);
       set({ phase: "error", error: String(e) });
+      return;
+    }
+    set({ phase: "installed" });
+    // The install applied. Relaunch to boot the new version; if relaunch itself
+    // throws (it can on Windows), the update still took — don't show a failure,
+    // it'll simply come up new on the next manual start.
+    try {
+      await relaunch();
+    } catch (e) {
+      console.error("[updater] relaunch after install failed (update applied):", e);
     }
   },
 }));
 
 /** True when there's a fresh update the user hasn't installed yet (drives the
- * nav badge). Downloading/installed count too so the badge doesn't flicker. */
+ * nav badge + InfoPage banner). Downloading/installed count so the badge doesn't
+ * flicker; `error` counts too so a failed install stays reachable for a retry
+ * (otherwise closing the modal would strand the pending update until restart). */
 export function hasPendingUpdate(s: UpdaterState): boolean {
-  return s.phase === "available" || s.phase === "downloading" || s.phase === "installed";
+  return (
+    s.phase === "available" ||
+    s.phase === "downloading" ||
+    s.phase === "installed" ||
+    s.phase === "error"
+  );
 }
