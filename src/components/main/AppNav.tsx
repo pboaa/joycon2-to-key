@@ -73,21 +73,18 @@ export function AppNav({
         ))}
 
         {/* Meta destinations (ヘルプ・情報) pinned to the bottom of the nav list,
-            as full-width tabs like the groups. The version rides on the last
-            tab's row (Info) — no divider. */}
+            as full-width tabs like the groups, with the version below them. */}
         <div className="mt-auto pt-1 flex flex-col gap-0.5">
-          {NAV_FOOTER_PAGES.map((id, i) => {
+          {NAV_FOOTER_PAGES.map((id) => {
             const meta = PAGES[id];
             const on = page === id;
-            const last = i === NAV_FOOTER_PAGES.length - 1;
-            const button = (
+            return (
               <button
                 key={id}
                 data-tour={`nav-${id}`}
                 onClick={() => onNavigate(id)}
                 className={
-                  "shrink-0 h-9 rounded-row text-body inline-flex items-center text-left gap-2 px-2 transition-colors " +
-                  (last ? "flex-1 min-w-0 " : "w-full ") +
+                  "relative shrink-0 h-9 w-full rounded-row text-body inline-flex items-center text-left gap-2 px-2 transition-colors " +
                   (on
                     ? "bg-bg3 text-accent font-medium"
                     : "text-text2 hover:bg-bg3 hover:text-text")
@@ -102,20 +99,13 @@ export function AppNav({
                     title={t("更新があります")}
                   />
                 )}
+                {/* Version tucked into the bottom-right corner of the Info tab. */}
+                {id === "info" && (
+                  <span className="pointer-events-none absolute bottom-0.5 right-1.5 text-caption leading-none text-text3/50 select-none tabular-nums">
+                    v{__APP_VERSION__}
+                  </span>
+                )}
               </button>
-            );
-            return last ? (
-              <div key={`${id}-row`} className="flex items-center gap-1.5">
-                {button}
-                {/* Version pinned to the far right of the Info row (bottom-right
-                    of the nav): ml-auto pushes it to the edge even when the
-                    button doesn't grow to fill. */}
-                <span className="ml-auto shrink-0 pr-1 text-caption text-text3/50 select-none tabular-nums">
-                  v{__APP_VERSION__}
-                </span>
-              </div>
-            ) : (
-              button
             );
           })}
         </div>
