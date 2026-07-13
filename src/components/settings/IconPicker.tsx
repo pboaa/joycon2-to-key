@@ -6,7 +6,7 @@ import { getRecentIcons, pushRecentIcon } from "../../lib/recentIcons";
 import { getIconTags, type IconTagIndex } from "../../lib/iconTags";
 import { fileToIconDataUrl } from "../../lib/imageIcon";
 import { toast } from "../../lib/toast";
-import { OpIcon, getIconNames } from "../ui/OpIcon";
+import { OpIcon, getIconNames, iconExists } from "../ui/OpIcon";
 import { ModalShell } from "../ui/ModalShell";
 import { SearchInput } from "../ui/SearchInput";
 
@@ -46,8 +46,10 @@ export function IconPicker({
   // their spaces, so they get the plain lower-cased query.
   const q = query.trim().toLowerCase().replace(/\s+/g, "");
   const qTag = query.trim().toLowerCase();
-  // Recently-picked icons (read once on open; picking closes the modal).
-  const [recents] = useState(getRecentIcons);
+  // Recently-picked icons (read once on open; picking closes the modal). Drop
+  // any that no longer resolve (e.g. picked from 0.1.0's full-barrel search),
+  // so the row never shows blank, clickable dead cells.
+  const [recents] = useState(() => getRecentIcons().filter(iconExists));
 
   // Name matches first (most relevant), then tag-only matches, capped. So a
   // keyword like "delete" surfaces IconTrash even though its name lacks "delete".

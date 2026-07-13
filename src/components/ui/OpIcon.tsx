@@ -1,3 +1,4 @@
+import { IconHelpCircle } from "@tabler/icons-react";
 import { ICON_SET } from "../../lib/iconSet.generated";
 
 /** Every icon export name the picker offers (e.g. "IconBrush"), sorted. Backed
@@ -6,6 +7,13 @@ import { ICON_SET } from "../../lib/iconSet.generated";
 const NAMES = Object.keys(ICON_SET).sort();
 export async function getIconNames(): Promise<string[]> {
   return NAMES;
+}
+
+/** Whether `name` renders to something: a custom image (data URL) or a Tabler
+ * name that's in the bundled curated set. Used to drop stale picks (e.g. from
+ * 0.1.0's full-barrel search) so they don't show as blank cells / empty slots. */
+export function iconExists(name: string): boolean {
+  return name.startsWith("data:") || name in ICON_SET;
 }
 
 /** Render a saved operation's icon: either a Tabler icon by its export name
@@ -43,7 +51,18 @@ export function OpIcon({
       />
     );
   }
+  // A Tabler name outside the curated set (e.g. a pick saved by 0.1.0's full
+  // search) can't be rendered — show a faded generic placeholder instead of a
+  // blank slot, so the icon reads as "unavailable" rather than missing.
   const Icon = ICON_SET[name];
-  if (!Icon) return null;
+  if (!Icon) {
+    return (
+      <IconHelpCircle
+        size={size}
+        className={(className ? className + " " : "") + "opacity-40"}
+        aria-hidden
+      />
+    );
+  }
   return <Icon size={size} className={className} color={color} aria-hidden />;
 }
