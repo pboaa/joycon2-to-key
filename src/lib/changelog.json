@@ -1,5 +1,22 @@
 [
   {
+    "version": "0.1.1",
+    "notes": {
+      "ja": [
+        "アプリ内アップデートを追加（更新があると通知し、その場で更新できます）。",
+        "二重起動を防止（既存のウィンドウを前面に表示）。",
+        "アイコンを整理してアプリを軽量化・起動を高速化。",
+        "キー編集の削除ボタンを右端へ移動。「初期化」は保存した操作も対象に。"
+      ],
+      "en": [
+        "Added in-app updates (notifies you and updates in place).",
+        "Prevented double-launch (focuses the existing window).",
+        "Slimmed the icon set for a smaller, faster app.",
+        "Moved the editor's Delete to the right; reset now also clears saved actions."
+      ]
+    }
+  },
+  {
     "version": "0.1.0",
     "notes": {
       "ja": ["初回のテスト・試用版。"],
