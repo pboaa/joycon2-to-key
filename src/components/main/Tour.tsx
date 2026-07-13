@@ -28,8 +28,7 @@ const STEPS: Step[] = [
     body: "主な画面をさっと案内します（スキップ可）。",
   },
   {
-    page: "keys",
-    target: "conn-guide",
+    target: "connect",
     title: "① 接続",
     body: "起動後は自動で接続を待ちます。Joy-Con 2 のシンクボタンでつながります（未接続でも割り当ては作れます）。",
   },

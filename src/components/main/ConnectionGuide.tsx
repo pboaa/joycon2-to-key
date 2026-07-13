@@ -16,9 +16,10 @@ export function ConnectionGuide() {
   const [dismissed, setDismissed] = useState(
     () => !!localStorage.getItem(DISMISS_KEY),
   );
-  // The guided tour spotlights this banner, so always show it while the tour
-  // runs (even if connected / previously dismissed).
-  if (!tourActive && (cs === "connected" || dismissed)) return null;
+  // Hidden while the guided tour runs (it would clutter the onboarding). After
+  // the tour ends the normal rule applies, so it appears then iff the user still
+  // hasn't connected (and hasn't dismissed it).
+  if (tourActive || cs === "connected" || dismissed) return null;
 
   const dismiss = () => {
     localStorage.setItem(DISMISS_KEY, "1");
@@ -26,10 +27,7 @@ export function ConnectionGuide() {
   };
 
   return (
-    <div
-      data-tour="conn-guide"
-      className="shrink-0 mx-2 mt-2 flex items-start gap-2.5 rounded-card border border-accent/30 bg-accent/8 px-3 py-2"
-    >
+    <div className="shrink-0 mx-2 mt-2 flex items-start gap-2.5 rounded-card border border-accent/30 bg-accent/8 px-3 py-2">
       <IconBluetooth size={16} className="mt-0.5 shrink-0 text-accent" aria-hidden />
       <div className="min-w-0 flex-1 space-y-0.5 text-label leading-relaxed">
         <p className="font-semibold text-text">{t("Joy-Con 2 を接続するには")}</p>
