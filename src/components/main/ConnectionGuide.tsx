@@ -29,7 +29,7 @@ export function ConnectionGuide() {
         <p className="font-semibold text-text">{t("Joy-Con 2 を接続するには")}</p>
         <p className="text-text2">
           {t(
-            "Joy-Con 2 側面の丸い「シンクボタン」を長押しすると接続します。左下が「待機中…」の間は接続を待っています。",
+            "Joy-Con 2 側面の丸い「シンクボタン」を長押しすると接続します。左上が「待機中…」の間は接続を待っています。",
           )}
         </p>
         <p className="text-text3">

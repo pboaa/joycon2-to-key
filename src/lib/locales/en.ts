@@ -51,8 +51,8 @@ export const en: Record<string, string> = {
     "Captures the key, mouse or scroll you press, as-is",
   "どのボタンにも割り当てられていません。": "Not assigned to any button.",
   "Joy-Con 2 を接続するには": "How to connect your Joy-Con 2",
-  "Joy-Con 2 側面の丸い「シンクボタン」を長押しすると接続します。左下が「待機中…」の間は接続を待っています。":
-    "Hold the round Sync button on the side of the Joy-Con 2 to connect. While the bottom-left shows “Waiting…”, it's waiting to pair.",
+  "Joy-Con 2 側面の丸い「シンクボタン」を長押しすると接続します。左上が「待機中…」の間は接続を待っています。":
+    "Hold the round Sync button on the side of the Joy-Con 2 to connect. While the top-left shows “Waiting…”, it's waiting to pair.",
   "接続していなくても、下の図でボタンに割り当てを設定できます。":
     "You can set up button assignments on the figure below even without a connection.",
   "「{{name}}」を削除しました": "Deleted “{{name}}”",
