@@ -13,9 +13,9 @@ use super::seed::seeded_definitions;
 
 /// Schema version of the unified store. Bumped when the on-disk shape changes.
 ///
-/// Reset to 1 for the public release: the accumulated v2→v4 migration ladder was
-/// dropped (older private builds' data is not carried forward). Any file we read
-/// is normalized to this number on load, so future breaking changes start a fresh
+/// Reset to 1 for the public release: earlier pre-1.0 migrations were dropped
+/// (older pre-release data is not carried forward). Any file we read is
+/// normalized to this number on load, so future breaking changes start a fresh
 /// migration chain from here.
 pub const WORKSPACE_VERSION: u32 = 1;
 

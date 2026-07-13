@@ -32,9 +32,9 @@ export interface LayerClipboard {
 import { DEFAULT_GLOBAL_SETTINGS } from "../lib/types";
 import { sanitizeProfiles } from "../lib/config/sanitize";
 
-/** On-disk workspace schema version. Reset to 1 for the public release (the
- * private-build v2→v4 migration ladder was dropped). The Rust side has its own
- * const and normalizes any file's version on load. */
+/** On-disk workspace schema version. Reset to 1 for the public release (earlier
+ * pre-1.0 migrations were dropped). The Rust side has its own const and
+ * normalizes any file's version on load. */
 export const WORKSPACE_VERSION = 1;
 const DEBOUNCE_MS = 400;
 
