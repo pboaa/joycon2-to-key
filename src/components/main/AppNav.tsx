@@ -107,7 +107,10 @@ export function AppNav({
             return last ? (
               <div key={`${id}-row`} className="flex items-center gap-1.5">
                 {button}
-                <span className="shrink-0 pr-1 text-caption text-text3/50 select-none tabular-nums">
+                {/* Version pinned to the far right of the Info row (bottom-right
+                    of the nav): ml-auto pushes it to the edge even when the
+                    button doesn't grow to fill. */}
+                <span className="ml-auto shrink-0 pr-1 text-caption text-text3/50 select-none tabular-nums">
                   v{__APP_VERSION__}
                 </span>
               </div>
