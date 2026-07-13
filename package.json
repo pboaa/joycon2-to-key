@@ -17,6 +17,7 @@
     "check:locales": "node scripts/check-locales.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "gen:thirdparty": "node scripts/gen-thirdparty.mjs",
+    "gen:icon-set": "node scripts/gen-icon-set.mjs",
     "gen:icon-tags": "node scripts/gen-icon-tags.mjs"
   },
   "dependencies": {

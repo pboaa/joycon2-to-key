@@ -13,9 +13,11 @@ import { SearchInput } from "../ui/SearchInput";
 const MAX_RESULTS = 180;
 
 /** Icon picker for tagging a saved operation. Browsing shows curated,
- * illustration-tool-oriented categories (draw / colour / select / …); the search box spans
- * the full ~6000 Tabler set (loaded on demand). The first cell clears the icon.
- * Stored value = the Tabler component name, e.g. "IconBrush". */
+ * illustration-tool-oriented categories (draw / colour / select / …); the search
+ * box matches names + concept tags across that same curated set (~200 icons —
+ * only these are bundled). Anything outside it can still be set via the custom
+ * image import. The first cell clears the icon. Stored value = the Tabler
+ * component name, e.g. "IconBrush". */
 export function IconPicker({
   value,
   onPick,
