@@ -82,13 +82,11 @@ export function appearanceFromSettings(s: GlobalSettings): PieAppearance {
   return { ...lookFromSettings(s), cancelOutside: s.pieCancelOutside };
 }
 
-/** A preset's overrides (a curated look). The threshold is left to the user, so
- * a preset never changes it. `size` is optional: most presets leave the user's
- * chosen size alone, but a preset may set it when the look really wants a
- * specific size (e.g. the compact text-only preset). */
-export type PresetLook = Omit<PieLookValues, "size" | "thresholdShow" | "thresholdColor"> & {
-  size?: number;
-};
+/** A preset's overrides (a curated look). `size` and the threshold are left to
+ * the user, so a preset never changes those — otherwise picking a preset that
+ * set a size would then "stick" that size across later preset switches (they
+ * don't touch size). Size is adjusted separately (its own control). */
+export type PresetLook = Omit<PieLookValues, "size" | "thresholdShow" | "thresholdColor">;
 
 /** Curated, differentiated looks. Picking one applies it wholesale (the detail
  * controls are folded away, since most users just pick a preset). */
@@ -131,7 +129,7 @@ export const PIE_PRESETS: { id: string; label: string; look: PresetLook }[] = [
   {
     id: "text",
     label: "文字だけ",
-    look: { design: "active", size: 120, bg: "#101018", opacity: 0, accent: "#5a5ae0", accentOpacity: 100, line: "#ffffff", lineOpacity: 0, lineStyle: "solid", labels: true, labelsCurrentOnly: false, dividers: false, dots: false, labelColor: "#5a5ae0" },
+    look: { design: "active", bg: "#101018", opacity: 0, accent: "#5a5ae0", accentOpacity: 100, line: "#ffffff", lineOpacity: 0, lineStyle: "solid", labels: true, labelsCurrentOnly: false, dividers: false, dots: false, labelColor: "#5a5ae0" },
   },
   {
     id: "ring",
