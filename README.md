@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Joycon2_To_Key_Icon.png" alt="JoyCon2 to Key" width="128" />
+</p>
+
 # JoyCon2 to Key
 
 *English: [README.en.md](README.en.md)*
@@ -23,7 +27,9 @@ Windows 用インストーラは **[最新リリース（Releases）](https://gi
 > **Windows の警告について**: 配布版のインストーラやアプリを初めて実行すると、
 > 「WindowsによってPCが保護されました」という SmartScreen の警告が出ることがあります。
 > コード署名をしていない個人開発アプリのための表示で、[詳細情報] →
-> [実行]（または[このまま実行]）で続行できます。
+> [実行]（または[このまま実行]）で続行できます。なお本アプリはキーボード／
+> マウス入力を合成（Win32 `SendInput`）するため、セキュリティソフトやゲームの
+> アンチチートに検知・ブロックされることがあります。
 
 ## 主な機能
 

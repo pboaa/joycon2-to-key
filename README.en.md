@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Joycon2_To_Key_Icon.png" alt="JoyCon2 to Key" width="128" />
+</p>
+
 # JoyCon2 to Key
 
 *日本語: [README.md](README.md)*
@@ -22,7 +26,9 @@ Built with [Tauri](https://tauri.app/) v2 + React + TypeScript. **Windows only**
 > **About the Windows warning**: the first time you run the distributed installer
 > or app, Windows SmartScreen may show a "Windows protected your PC" prompt. This
 > is expected for a personal app that isn't code-signed — click **More info** →
-> **Run anyway** to continue.
+> **Run anyway** to continue. Note that because the app synthesizes keyboard /
+> mouse input (Win32 `SendInput`), some antivirus tools or game anti-cheat
+> systems may flag or block it.
 
 ## Features
 
@@ -44,7 +50,7 @@ Built with [Tauri](https://tauri.app/) v2 + React + TypeScript. **Windows only**
 - **Idle auto-disconnect** — after a while with no input, held keys are released
   and the BLE link is dropped to save the Joy-Con's battery (with an optional
   warning buzz just before). Press the sync button to reconnect when you need it.
-- **Themes** — light / dark plus color themes (matcha, hatsuyuki); can follow the system.
+- **Themes** — light / dark plus color themes (Matcha Cat, First Snow); can follow the system.
 
 ## Requirements
 
