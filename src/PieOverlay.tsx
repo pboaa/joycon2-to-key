@@ -43,13 +43,25 @@ export function PieOverlay() {
   // Cursor offset from the pie start (physical px). Reset on open; updated
   // from pie-pos. Used to place the active label at the mouse.
   const [offset, setOffset] = useState<[number, number] | undefined>();
-  // The overlay is full-screen; the pie is drawn at this centre (CSS px, window-
-  // relative) = the pie start. `null` until the first `pie-center` arrives, so
-  // the very first open doesn't flash at the window's top-left for a frame.
-  // `globalSize` is the global pie box size (a pie can override it via its
-  // appearance).
-  const [center, setCenter] = useState<[number, number] | null>(null);
+  // The overlay is full-screen; the pie is drawn at this centre (= the pie
+  // start), kept in PHYSICAL px and converted to CSS px at render time. On a
+  // mixed-DPI setup the webview's devicePixelRatio updates asynchronously after
+  // the window moves to the other monitor, so converting once at event time
+  // could bake in the previous monitor's scale. `null` until the first
+  // `pie-center` arrives, so the very first open doesn't flash at the window's
+  // top-left for a frame. `globalSize` is the global pie box size (a pie can
+  // override it via its appearance).
+  const [centerPhys, setCenterPhys] = useState<[number, number] | null>(null);
   const [globalSize, setGlobalSize] = useState(DEFAULT_GLOBAL_SETTINGS.pieOverlaySize);
+  // Re-render when the window resizes — that's also when a DPI change lands
+  // (the overlay covers a monitor, so a scale change alters its CSS size),
+  // letting the render-time dpr conversion self-correct.
+  const [, setResizeTick] = useState(0);
+  useEffect(() => {
+    const onResize = () => setResizeTick((n) => n + 1);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   const refreshFromWorkspace = () => {
     loadWorkspace()
@@ -87,9 +99,8 @@ export function PieOverlay() {
       listen<number>("pie-dir", (e) => setCurrent(e.payload)),
       listen<[number, number]>("pie-pos", (e) => setOffset(e.payload)),
       listen<[number, number]>("pie-center", (e) => {
-        // physical px (window-relative) → CSS px.
-        const dpr = window.devicePixelRatio || 1;
-        setCenter([e.payload[0] / dpr, e.payload[1] / dpr]);
+        // Stored in physical px; converted to CSS px at render (see above).
+        setCenterPhys(e.payload);
       }),
     ];
     return () => {
@@ -105,9 +116,11 @@ export function PieOverlay() {
 
   // Don't draw until we know where the pie starts (avoids the first-open
   // top-left flash). The overlay window itself stays transparent meanwhile.
-  if (center === null) {
+  if (centerPhys === null) {
     return <div style={{ position: "fixed", inset: 0, pointerEvents: "none" }} />;
   }
+  // Physical → CSS px with the CURRENT dpr (self-corrects after a DPI change).
+  const center: [number, number] = [centerPhys[0] / dpr, centerPhys[1] / dpr];
 
   // "active": since the window is full-screen, show the label of what will fire
   // (the currently-pointed direction) at the actual mouse position (window-relative
