@@ -77,7 +77,10 @@ export function relinkAssignments(
   press: PressConfig,
 ): AppConfig | null {
   if (locations.size === 0) return null;
+  // Only re-link a button that's still unlinked (def == null). If the user
+  // reassigned it to another operation while the Undo toast was up, leave that
+  // new assignment alone — Undo must not clobber it.
   return mapConfigAssignments(config, (a, key) =>
-    locations.has(key) ? { ...a, def: defId, press } : null,
+    locations.has(key) && a.def == null ? { ...a, def: defId, press } : null,
   );
 }
