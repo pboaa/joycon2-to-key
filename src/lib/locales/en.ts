@@ -59,8 +59,8 @@ export const en: Record<string, string> = {
   "フォルダ「{{name}}」を削除しました": "Deleted folder “{{name}}”",
   "レイヤー「{{name}}」を削除しました": "Deleted layer “{{name}}”",
   "プロファイル「{{name}}」を削除しました": "Deleted profile “{{name}}”",
-  割り当てをクリアしました: "Assignment cleared",
-  上書きしました: "Overwritten",
+  "「{{name}}」の割り当てをクリアしました": "Cleared “{{name}}”",
+  "「{{name}}」を上書きしました": "Overwrote “{{name}}”",
   // ── Language ──
   言語: "Language",
   "システムに合わせる": "Follow system",

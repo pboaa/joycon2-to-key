@@ -7,6 +7,7 @@ import type { ConfigActions } from "../../lib/useConfigActions";
 import type { Heatmap } from "../../lib/useHeatmap";
 import { PAGES } from "../../lib/pages";
 import { useUsageHeat } from "../../lib/useUsageHeat";
+import { buttonLabel } from "../../lib/keyCatalog";
 import { useContextMenu } from "../ui/ContextMenu";
 import { MID_COL_W } from "../ui/layout";
 import { PageHeader } from "../ui/PageHeader";
@@ -83,7 +84,7 @@ export function KeysStatsPage({
     const prevDirect = sel.layer?.buttons[key];
     actions.setAssignmentAt(key, structuredClone(sel.clipboard));
     if (prevDirect && prevDirect.press.type !== "none") {
-      toast.undo(t("上書きしました"), t("元に戻す"), () =>
+      toast.undo(t("「{{name}}」を上書きしました", { name: buttonLabel(key) }), t("元に戻す"), () =>
         actions.setAssignmentAt(key, structuredClone(prevDirect)),
       );
     }
@@ -93,7 +94,7 @@ export function KeysStatsPage({
     // Undo restores exactly — including "was inherited" (undefined → no override).
     const prevDirect = sel.layer?.buttons[key];
     actions.setAssignmentAt(key, null);
-    toast.undo(t("割り当てをクリアしました"), t("元に戻す"), () =>
+    toast.undo(t("「{{name}}」の割り当てをクリアしました", { name: buttonLabel(key) }), t("元に戻す"), () =>
       actions.setAssignmentAt(key, prevDirect ? structuredClone(prevDirect) : null),
     );
   };

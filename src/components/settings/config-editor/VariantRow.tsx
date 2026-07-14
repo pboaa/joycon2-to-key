@@ -8,6 +8,7 @@ import type {
 import { useTranslation } from "react-i18next";
 import { IconLink, IconDeviceFloppy } from "@tabler/icons-react";
 import { shortLabel } from "../../../lib/variants";
+import { buttonLabel } from "../../../lib/keyCatalog";
 import { linkedPress } from "../../../lib/config/press";
 import { toast } from "../../../lib/toast";
 import { useStore } from "../../../store";
@@ -68,7 +69,11 @@ export function VariantRow({
     // right-click clear), no confirm. Restores via onChange with the snapshot.
     const prev = structuredClone(variant);
     onDelete();
-    toast.undo(t("割り当てをクリアしました"), t("元に戻す"), () => onChange(prev));
+    toast.undo(
+      t("「{{name}}」の割り当てをクリアしました", { name: buttonLabel(btnKey) }),
+      t("元に戻す"),
+      () => onChange(prev),
+    );
   };
   const saveAsDefinition = async () => {
     const name = press.label || shortLabel(press) || t("操作");
