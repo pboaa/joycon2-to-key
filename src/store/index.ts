@@ -7,6 +7,7 @@ import {
   defaultProfiles,
   getConfigPath,
   loadWorkspace,
+  resetDefinitions,
   saveWorkspace,
 } from "../lib/tauri";
 import type {
@@ -99,6 +100,10 @@ export interface StoreState {
   setPieMenus: (next: PieMenu[]) => void;
   saveNow: () => Promise<void>;
   resetProfilesToDefault: () => Promise<AppConfig>;
+  /** Fresh-install reset: profiles AND the operation library both go back to
+   * the bundled defaults, in one atomic write. (Doesn't touch usage stats —
+   * those live in the Rust runtime; the caller resets them separately.) */
+  resetAllToDefault: () => Promise<AppConfig>;
 
   setSelectedProfile: (n: string) => void;
   setSelectedLayer: (n: string) => void;
@@ -182,6 +187,32 @@ export const useStore = create<StoreState>((set, get) => ({
     try {
       const profiles = await defaultProfiles();
       set({ profiles });
+      await flush();
+      return profiles;
+    } catch (e) {
+      set({ saveError: String(e) });
+      return get().profiles ?? {};
+    } finally {
+      set({ saving: false });
+    }
+  },
+
+  resetAllToDefault: async () => {
+    set({ saving: true, saveError: null });
+    try {
+      // Reset profiles + the operation library together and write ONCE. Doing
+      // these as two separate steps (reset profiles, then reset defs via a
+      // stale-closure setConfig) let the second clobber the first — the reset
+      // then appeared to "not take" until repeated. One atomic set avoids that.
+      const [profiles, seeded] = await Promise.all([
+        defaultProfiles(),
+        resetDefinitions(),
+      ]);
+      set({
+        profiles,
+        groups: seeded.groups,
+        definitions: seeded.definitions,
+      });
       await flush();
       return profiles;
     } catch (e) {

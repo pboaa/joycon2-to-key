@@ -13,6 +13,7 @@ import { useLanguage } from "./lib/i18n";
 import { useConfigIO } from "./lib/useConfigIO";
 import { useWorkspaceIO } from "./lib/useWorkspaceIO";
 import { useHeatmap } from "./lib/useHeatmap";
+import { resetUsage } from "./lib/tauri";
 import { AppNav, type AppPage } from "./components/main/AppNav";
 import { ProfileSettingsModal } from "./components/main/ProfileSettingsModal";
 import { HelpPage } from "./components/main/HelpPage";
@@ -33,7 +34,7 @@ export function MainScreen({ joyCon }: Props) {
   // Read the profiles slice straight from the store (persistence lives there).
   const config = useStore((s) => s.profiles);
   const setConfig = useStore((s) => s.setProfiles);
-  const resetProfilesToDefault = useStore((s) => s.resetProfilesToDefault);
+  const resetAllToDefault = useStore((s) => s.resetAllToDefault);
 
   // Profile settings (name + matched apps) — a modal now that profiles have no
   // dedicated page. Edits the selected profile. `isNew` marks the ＋-created
@@ -47,19 +48,21 @@ export function MainScreen({ joyCon }: Props) {
   const selection = useSelection(config, joyCon.activeLayer, !!profileSettings);
   const actions = useConfigActions(config, setConfig, selection);
   const defs = useDefinitionSync(config, setConfig);
+  const heat = useHeatmap();
   // "Reset everything" (settings → Manage) means a fresh install: profiles AND
-  // the saved-operations library both go back to the bundled defaults.
+  // the saved-operations library both go back to the bundled defaults (in one
+  // atomic write — see resetAllToDefault), and the usage stats are wiped too.
   const reset = useCallback(async () => {
-    await resetProfilesToDefault();
-    await defs.resetAllCore();
-  }, [resetProfilesToDefault, defs]);
+    await resetAllToDefault();
+    await resetUsage();
+    heat.refresh();
+  }, [resetAllToDefault, heat]);
   const { settings, updateSettings } = useSettings();
   useTheme(settings.theme);
   useUiScale(settings.uiScale);
   useLanguage(settings.language);
   const io = useConfigIO({ reset });
   const wio = useWorkspaceIO();
-  const heat = useHeatmap();
   const { t } = useTranslation();
 
   // ── Page navigation (left rail; lives in the store so deep components like
