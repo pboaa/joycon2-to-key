@@ -100,9 +100,11 @@ export interface StoreState {
   setPieMenus: (next: PieMenu[]) => void;
   saveNow: () => Promise<void>;
   resetProfilesToDefault: () => Promise<AppConfig>;
-  /** Fresh-install reset: profiles AND the operation library both go back to
-   * the bundled defaults, in one atomic write. (Doesn't touch usage stats —
-   * those live in the Rust runtime; the caller resets them separately.) */
+  /** Fresh-install reset: profiles, the operation library, AND settings all go
+   * back to the bundled defaults in one atomic write — except the display /
+   * locale prefs (language, theme, UI scale), which are kept so the UI doesn't
+   * jarringly change on reset. (Doesn't touch usage stats — those live in the
+   * Rust runtime; the caller resets them separately.) */
   resetAllToDefault: () => Promise<AppConfig>;
 
   setSelectedProfile: (n: string) => void;
@@ -208,10 +210,19 @@ export const useStore = create<StoreState>((set, get) => ({
         defaultProfiles(),
         resetDefinitions(),
       ]);
+      const prev = get().settings;
       set({
         profiles,
         groups: seeded.groups,
         definitions: seeded.definitions,
+        // Reset settings too, but keep the display / locale prefs so the UI
+        // doesn't jump to a different language, theme, or size on reset.
+        settings: {
+          ...DEFAULT_GLOBAL_SETTINGS,
+          language: prev.language,
+          theme: prev.theme,
+          uiScale: prev.uiScale,
+        },
       });
       await flush();
       return profiles;

@@ -15,7 +15,7 @@ export function useConfigIO(opts: { reset: () => Promise<void> }) {
       await confirmReset(confirm, t, {
         title: "初期化の確認",
         message:
-          "すべて（プロファイル・キー割り当て・保存した操作・統計）を初期状態に戻しますか？この操作は取り消せません。",
+          "すべて（プロファイル・キー割り当て・保存した操作・統計・設定）を初期状態に戻しますか？（言語・テーマ・表示倍率は保持）この操作は取り消せません。",
         okLabel: "初期化",
       })
     ) {
