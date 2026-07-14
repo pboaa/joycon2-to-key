@@ -54,7 +54,15 @@ const add = (s) => {
 for (const m of source.matchAll(/\bt\(\s*"([^"]+)"/g)) add(m[1]);
 const PROPS =
   "title|label|desc|hint|placeholder|previewTip|handleTitle|emptyHint|okLabel";
+// JSX attribute form: title="…"
 for (const m of source.matchAll(new RegExp(`\\b(?:${PROPS})=\\s*"([^"]+)"`, "g")))
+  add(m[1]);
+// Object-literal form: label: "…" (data-driven menu items, SECTIONS, options).
+// These are translated at render (e.g. ContextMenu does t(item.label)), so the
+// attribute-only scan missed them — a new one lacking an en.ts entry would pass
+// the check yet fall back to Japanese. The hasJa filter keeps non-UI object keys
+// (type: "input", value: "left") from being flagged.
+for (const m of source.matchAll(new RegExp(`\\b(?:${PROPS}):\\s*"([^"]+)"`, "g")))
   add(m[1]);
 const missing = [...used].filter((k) => !keys.has(k));
 
