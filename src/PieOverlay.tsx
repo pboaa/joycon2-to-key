@@ -44,9 +44,11 @@ export function PieOverlay() {
   // from pie-pos. Used to place the active label at the mouse.
   const [offset, setOffset] = useState<[number, number] | undefined>();
   // The overlay is full-screen; the pie is drawn at this centre (CSS px, window-
-  // relative) = the pie start. `globalSize` is the global pie box size (a pie
-  // can override it via its appearance).
-  const [center, setCenter] = useState<[number, number]>([0, 0]);
+  // relative) = the pie start. `null` until the first `pie-center` arrives, so
+  // the very first open doesn't flash at the window's top-left for a frame.
+  // `globalSize` is the global pie box size (a pie can override it via its
+  // appearance).
+  const [center, setCenter] = useState<[number, number] | null>(null);
   const [globalSize, setGlobalSize] = useState(DEFAULT_GLOBAL_SETTINGS.pieOverlaySize);
 
   const refreshFromWorkspace = () => {
@@ -100,6 +102,12 @@ export function PieOverlay() {
   const eff = mergeLook(style, menu.appearance);
   const sizeCss = menu.appearance?.size ?? globalSize;
   const deadzone = deadzoneRadius(menu.threshold ?? globalThreshold, sizeCss);
+
+  // Don't draw until we know where the pie starts (avoids the first-open
+  // top-left flash). The overlay window itself stays transparent meanwhile.
+  if (center === null) {
+    return <div style={{ position: "fixed", inset: 0, pointerEvents: "none" }} />;
+  }
 
   // "active": since the window is full-screen, show the label of what will fire
   // (the currently-pointed direction) at the actual mouse position (window-relative
