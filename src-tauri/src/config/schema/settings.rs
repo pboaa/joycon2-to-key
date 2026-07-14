@@ -138,7 +138,7 @@ pub struct GlobalSettings {
     pub pie_overlay_threshold_color: String,
     /// Whether releasing beyond the outer ring cancels the pie (fires
     /// nothing). Read by the input thread.
-    #[serde(default = "GlobalSettings::default_true")]
+    #[serde(default)]
     pub pie_cancel_outside: bool,
     /// Keep only the most recent N days of usage stats; older daily buckets are
     /// auto-deleted. `0` = unlimited (keep everything — the default). Applied by
@@ -280,7 +280,7 @@ impl Default for GlobalSettings {
             pie_overlay_line_style: Self::default_pie_overlay_line_style(),
             pie_overlay_threshold_show: false,
             pie_overlay_threshold_color: Self::default_pie_overlay_threshold_color(),
-            pie_cancel_outside: true,
+            pie_cancel_outside: false,
             usage_retention_days: 0,
             titlebar_battery: false,
         }

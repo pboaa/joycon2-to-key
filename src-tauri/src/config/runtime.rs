@@ -79,7 +79,7 @@ impl RuntimeSettings {
             pie_threshold: AtomicI32::new(0),
             scroll_amount: AtomicI32::new(0),
             pie_overlay_enabled: AtomicBool::new(true),
-            pie_cancel_outside: AtomicBool::new(true),
+            pie_cancel_outside: AtomicBool::new(false),
             pie_overlay_size: AtomicI32::new(280),
             stick_deadzone: AtomicI32::new(0),
             vibrate_pending: Mutex::new(None),
