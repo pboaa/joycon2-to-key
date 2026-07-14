@@ -1,5 +1,20 @@
 [
   {
+    "version": "0.1.6",
+    "notes": {
+      "ja": [
+        "カスタムアイコンの画像が表示されない不具合を修正。",
+        "接続や保存に失敗したときにエラーを通知するように（Bluetoothオフなど、原因が分かるように）。",
+        "バックアップの取り込み前に、そのファイルが送る危険な入力操作を確認画面に表示するように。"
+      ],
+      "en": [
+        "Fixed custom icon images failing to display.",
+        "Connection and save failures now show an error (so you can tell why, e.g. Bluetooth off).",
+        "The backup-import confirmation now lists any risky input actions the file would send."
+      ]
+    }
+  },
+  {
     "version": "0.1.5",
     "notes": {
       "ja": [

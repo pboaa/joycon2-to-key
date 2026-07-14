@@ -1,6 +1,6 @@
 [package]
 name = "joycon2-to-key"
-version = "0.1.5"
+version = "0.1.6"
 description = "Map Nintendo Switch 2 Joy-Con (Joy-Con 2) BLE input to Windows keyboard and mouse actions."
 authors = ["pboaa"]
 license = "GPL-3.0-or-later"
