@@ -1,8 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { GlobalSettings, Language, ThemeMode } from "../../../lib/types";
 import { ACCENT_PRESETS, MAP_PRESETS } from "../../../lib/joyconColors";
-import { resetWindowSize } from "../../../lib/window";
-import { Button } from "../../ui/Button";
 import { Select } from "../../ui/Select";
 import { Card } from "../../ui/Card";
 import { Toggle } from "../../ui/Toggle";
@@ -130,17 +128,6 @@ export function GeneralTab({
             </Select>
           </SettingRow>
         </NestedSettings>
-      </Card>
-
-      <Card
-        title="ウインドウ"
-        desc="ウインドウを見失ったときや大きさが崩れたときに、既定のサイズ（960×660）に戻して中央に配置します。"
-      >
-        <div>
-          <Button size="xs" onClick={() => void resetWindowSize().catch(() => {})}>
-            {t("ウインドウサイズを既定に戻す")}
-          </Button>
-        </div>
       </Card>
     </>
   );

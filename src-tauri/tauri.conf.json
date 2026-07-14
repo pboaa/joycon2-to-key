@@ -16,10 +16,8 @@
         "title": "JoyCon2 to Key",
         "width": 960,
         "height": 660,
-        "minWidth": 860,
-        "minHeight": 600,
-        "resizable": true,
-        "maximizable": true,
+        "resizable": false,
+        "maximizable": false,
         "center": true,
         "decorations": false,
         "dragDropEnabled": false

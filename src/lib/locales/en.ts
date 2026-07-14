@@ -234,10 +234,6 @@ export const en: Record<string, string> = {
   パイの閾値: "Pie threshold",
   "表示言語・テーマ配色・放置時の自動停止など。":
     "Language, theme colours, idle auto-stop, and more.",
-  ウインドウ: "Window",
-  "ウインドウを見失ったときや大きさが崩れたときに、既定のサイズ（960×660）に戻して中央に配置します。":
-    "Restore the default size (960×660) and re-centre the window — handy if it's been lost off-screen or resized awkwardly.",
-  "ウインドウサイズを既定に戻す": "Reset window size",
   "キー送出やスクロールなどの既定値。": "Defaults for key output, scrolling, and more.",
   表示言語: "Display language",
   "電池較正・LED・接続時のお知らせ（音・振動）。":
