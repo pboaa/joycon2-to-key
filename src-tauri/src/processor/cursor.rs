@@ -36,7 +36,11 @@ impl CursorMotion {
             return false;
         }
         let mag = (x * x + y * y).sqrt();
-        if mag < deadzone {
+        // `<=` (not `<`): with the deadzone slider at 0, a centred stick has
+        // mag == 0.0 == deadzone; `<` would fall through, divide 0/0 into a NaN
+        // scale, and report "moved" every tick — permanently defeating the idle
+        // auto-disconnect (and stalling the cursor on NaN).
+        if mag <= deadzone {
             // Crisp stop on release (no easing tail) so drawing lands precisely.
             self.reset();
             return false;
