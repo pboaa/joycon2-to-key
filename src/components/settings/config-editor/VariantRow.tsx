@@ -70,7 +70,7 @@ export function VariantRow({
     const prev = structuredClone(variant);
     onDelete();
     toast.undo(
-      t("「{{name}}」の割り当てをクリアしました", { name: buttonLabel(btnKey) }),
+      t("「{{name}}」の割り当てを削除しました", { name: buttonLabel(btnKey) }),
       t("元に戻す"),
       () => onChange(prev),
     );

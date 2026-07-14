@@ -94,7 +94,7 @@ export function KeysStatsPage({
     // Undo restores exactly — including "was inherited" (undefined → no override).
     const prevDirect = sel.layer?.buttons[key];
     actions.setAssignmentAt(key, null);
-    toast.undo(t("「{{name}}」の割り当てをクリアしました", { name: buttonLabel(key) }), t("元に戻す"), () =>
+    toast.undo(t("「{{name}}」の割り当てを削除しました", { name: buttonLabel(key) }), t("元に戻す"), () =>
       actions.setAssignmentAt(key, prevDirect ? structuredClone(prevDirect) : null),
     );
   };
