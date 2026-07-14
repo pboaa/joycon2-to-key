@@ -544,6 +544,10 @@ export const en: Record<string, string> = {
   左クリック: "Left click",
   左ダブル: "Left double",
 
+  // ── Error toasts ──
+  "接続に失敗しました: {{error}}": "Connection failed: {{error}}",
+  "保存に失敗しました: {{error}}": "Save failed: {{error}}",
+
   // ── Workspace I/O ──
   "エクスポート失敗: {{error}}": "Export failed: {{error}}",
   "読み込み失敗: {{error}}": "Load failed: {{error}}",

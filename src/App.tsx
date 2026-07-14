@@ -9,6 +9,7 @@ import { useJoyCon } from "./lib/useJoyCon";
 import { useDragScroll } from "./lib/useDragScroll";
 import { useReorderDropTarget } from "./lib/useDragReorder";
 import { useUpdater } from "./lib/useUpdater";
+import { useErrorToasts } from "./lib/useErrorToasts";
 import { bootstrapStore } from "./store";
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
     return () => document.removeEventListener("contextmenu", onCtx);
   }, []);
   const joyCon = useJoyCon();
+  useErrorToasts();
   useDragScroll();
   useReorderDropTarget();
 
