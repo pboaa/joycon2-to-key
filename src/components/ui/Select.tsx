@@ -138,7 +138,6 @@ export function Select({
       window.removeEventListener("resize", reclose);
       document.removeEventListener("mousedown", onDown);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   // Keep the keyboard-highlighted row in view.

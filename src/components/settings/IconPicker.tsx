@@ -33,13 +33,13 @@ export function IconPicker({
   // the curated categories show instantly meanwhile).
   const [all, setAll] = useState<string[]>([]);
   useEffect(() => {
-    getIconNames().then(setAll);
+    getIconNames().then(setAll).catch(() => {});
   }, []);
   // Concept keywords (IconName → "tag tag …"), lazy-loaded so searching can match
   // "erase" / "delete" etc., not just the component name. Absent until it loads.
   const [tags, setTags] = useState<IconTagIndex>({});
   useEffect(() => {
-    getIconTags().then(setTags);
+    getIconTags().then(setTags).catch(() => {});
   }, []);
   // Tabler names are PascalCase with no spaces/hyphens (e.g. IconBrush); match a
   // space-stripped, lower-cased query against the lower-cased name. Tags keep

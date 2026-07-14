@@ -26,7 +26,7 @@ export function useHeatmap(): Heatmap {
     if (!on) return;
     let alive = true;
     const load = () => getUsage().then((u) => alive && setUsage(u)).catch(() => {});
-    load();
+    void load();
     const id = setInterval(load, 2000);
     return () => {
       alive = false;

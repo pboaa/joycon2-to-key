@@ -111,7 +111,7 @@ export function useJoyCon(): JoyConHook {
         if (!stopped) timer = window.setTimeout(tick, BACKSTOP_POLL_MS);
       }
     };
-    tick();
+    void tick();
 
     return () => {
       stopped = true;
@@ -191,7 +191,7 @@ export function useJoyConSnapshot(): JoyConState | null {
         if (!stoppedRef.current) timer = window.setTimeout(tick, SNAPSHOT_POLL_MS);
       }
     };
-    tick();
+    void tick();
 
     return () => {
       stoppedRef.current = true;

@@ -42,11 +42,11 @@ export function ManageTab({
   const toggleRestore = () => {
     const next = !showRestore;
     setShowRestore(next);
-    if (next) refreshBackups();
+    if (next) void refreshBackups();
   };
   const restore = async (name: string) => {
     await onRestore(name);
-    refreshBackups();
+    void refreshBackups();
   };
   return (
     <>
