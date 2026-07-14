@@ -126,6 +126,19 @@ export function PieAppearanceCards({
         </div>
       </Section>
 
+      {/* ── 大きさ（プリセットとは別軸なので、詳細設定を開かずに触れる位置に） ── */}
+      <Section title="大きさ">
+        <SettingRow label="大きさ" hint="px" reset={resetFor("size")}>
+          <NumSlider
+            value={look.size}
+            min={120}
+            max={800}
+            step={10}
+            onChange={(v) => set({ size: v })}
+          />
+        </SettingRow>
+      </Section>
+
       {/* ── 詳細設定（折り畳み。基本はプリセットでOK） ── */}
       <button
         type="button"
@@ -138,8 +151,8 @@ export function PieAppearanceCards({
 
       {open && (
       <>
-      {/* ── 形・サイズ ── */}
-      <Section title="形・サイズ">
+      {/* ── デザイン（大きさは上のカードに出してある） ── */}
+      <Section title="デザイン">
         <SettingRow label="デザイン" reset={resetFor("design")}>
           <Select
             value={look.design}
@@ -157,15 +170,6 @@ export function PieAppearanceCards({
         <p className="-mt-1 pl-1 text-caption text-text3">
           {t(PIE_DESIGNS.find((d) => d.value === look.design)?.desc ?? "")}
         </p>
-        <SettingRow label="大きさ" hint="px" reset={resetFor("size")}>
-          <NumSlider
-            value={look.size}
-            min={120}
-            max={800}
-            step={10}
-            onChange={(v) => set({ size: v })}
-          />
-        </SettingRow>
       </Section>
 
       {/* ── 色（背景・強調・文字） ── */}

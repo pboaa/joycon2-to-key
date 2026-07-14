@@ -151,7 +151,6 @@ export const en: Record<string, string> = {
   "パイメニュー共通の見た目と動作。": "Shared look and behaviour of the pie menu.",
   "ボタンを押しながらマウスを動かした方向で発火します。見た目は全パイ共通の既定です。":
     "Fires in the direction you move the mouse while holding the button. The look is the default shared by all pies.",
-  "形・サイズ": "Shape & size",
   色: "Color",
   既定の色: "Default color",
   ラベル: "Label",
