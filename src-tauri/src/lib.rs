@@ -123,6 +123,7 @@ pub fn run() {
             commands::get_pie_usage,
             commands::get_def_usage,
             commands::reset_usage,
+            commands::reset_button_usage,
             commands::export_backup,
             commands::import_backup,
             commands::apply_backup_stats,

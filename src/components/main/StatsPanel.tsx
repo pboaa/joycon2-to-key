@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IconPencil } from "@tabler/icons-react";
+import { IconPencil, IconRotate } from "@tabler/icons-react";
 import type { Definition, PressConfig } from "../../lib/types";
 import type { Heatmap } from "../../lib/useHeatmap";
-import { getPieUsage, type DayPieUsageMap } from "../../lib/tauri";
+import { getPieUsage, resetButtonUsage, type DayPieUsageMap } from "../../lib/tauri";
 import { sumPieUsage } from "../../lib/usage";
 import { useUsageHeat } from "../../lib/useUsageHeat";
 import { inputsLabel, assignmentLabel } from "../../lib/variants";
 import { makeDefResolver } from "../../lib/defResolver";
 import { useStore } from "../../store";
+import { useConfirm } from "../Confirm";
+import { confirmReset } from "../../lib/confirms";
 import { KeyCap } from "../ui/KeyCap";
 import { SIDE_PANEL_CLS } from "../ui/layout";
 import { PieFigure } from "../pie/PieFigure";
@@ -36,8 +38,24 @@ export function StatsPanel({
   const selProfile = useStore((s) => s.selectedProfile);
   const selLayer = useStore((s) => s.selectedLayer);
   const navigate = useStore((s) => s.navigate);
+  const confirm = useConfirm();
   const win = heatmap.win;
   const isPie = press?.type === "pie";
+
+  // Clear just this button's counts (across all windows) — for wiping leftover
+  // stats from a button whose assignment changed.
+  const resetThisButton = async () => {
+    if (!btnKey) return;
+    if (
+      await confirmReset(confirm, t, {
+        title: "このボタンの使用回数をリセット",
+        message: "このボタンの記録した使用回数を消去しますか？",
+      })
+    ) {
+      await resetButtonUsage(selProfile, selLayer, btnKey);
+      heatmap.refresh();
+    }
+  };
 
   // Shared with the figure: per-button counts + a colorOf on the same scale.
   const { counts: btnCounts, colorOf } = useUsageHeat(
@@ -84,9 +102,19 @@ export function StatsPanel({
         <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-3">
           <div className="flex items-baseline justify-between gap-2">
             <span className="text-body text-text2">{t("発火回数")}</span>
-            <span className="text-title font-semibold tabular-nums">
-              {btnCounts[btnKey] ?? 0}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-title font-semibold tabular-nums">
+                {btnCounts[btnKey] ?? 0}
+              </span>
+              <button
+                onClick={() => void resetThisButton()}
+                data-tip={t("このボタンの使用回数をリセット")}
+                aria-label={t("このボタンの使用回数をリセット")}
+                className="shrink-0 w-6 h-6 rounded-row border border-border text-text3 hover:bg-bg3 hover:text-danger inline-flex items-center justify-center"
+              >
+                <IconRotate size={12} aria-hidden />
+              </button>
+            </div>
           </div>
           {press &&
             press.type === "pie" &&

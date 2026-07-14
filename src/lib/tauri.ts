@@ -32,6 +32,7 @@ export const CMD = {
   getPieUsage: "get_pie_usage",
   getDefUsage: "get_def_usage",
   resetUsage: "reset_usage",
+  resetButtonUsage: "reset_button_usage",
   exportBackup: "export_backup",
   importBackup: "import_backup",
   applyBackupStats: "apply_backup_stats",
@@ -84,6 +85,9 @@ export const getPieUsage = () => invoke<DayPieUsageMap>(CMD.getPieUsage);
 /** Per-operation usage counts (definition id → count), by day. */
 export const getDefUsage = () => invoke<DayDefUsageMap>(CMD.getDefUsage);
 export const resetUsage = () => invoke<void>(CMD.resetUsage);
+/** Clear one button's usage counts (button + pie directions) across all days. */
+export const resetButtonUsage = (profile: string, layer: string, button: string) =>
+  invoke<void>(CMD.resetButtonUsage, { profile, layer, button });
 /** Export the whole workspace to a user-chosen path (atomic write in Rust). */
 /** Export a full backup (workspace + usage stats) to a path. The backend
  * attaches the current stats; the caller passes the workspace. */

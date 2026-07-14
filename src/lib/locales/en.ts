@@ -216,6 +216,8 @@ export const en: Record<string, string> = {
   期間: "Period",
   "使用回数のリセット": "Reset usage counts",
   "記録した使用回数をすべて消去しますか？": "Clear all recorded usage counts?",
+  "このボタンの使用回数をリセット": "Reset this button's usage",
+  "このボタンの記録した使用回数を消去しますか？": "Clear this button's recorded usage counts?",
   リセット: "Reset",
   回数: "Count",
   使用回数: "Usage",

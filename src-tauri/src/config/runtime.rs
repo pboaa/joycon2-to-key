@@ -242,6 +242,32 @@ impl RuntimeSettings {
         self.usage_dirty.store(true, Ordering::Relaxed);
     }
 
+    /// Clear one button's counts (button activations + its pie directions)
+    /// across every day, leaving all other buttons intact. `def_usage` is keyed
+    /// by operation, not button, so a shared operation's total is left alone.
+    /// The caller persists.
+    pub fn reset_button_usage(&self, profile: &str, layer: &str, btn: &str) {
+        if let Ok(mut u) = self.usage.lock() {
+            for day in u.values_mut() {
+                if let Some(layers) = day.get_mut(profile) {
+                    if let Some(btns) = layers.get_mut(layer) {
+                        btns.remove(btn);
+                    }
+                }
+            }
+        }
+        if let Ok(mut u) = self.pie_usage.lock() {
+            for day in u.values_mut() {
+                if let Some(layers) = day.get_mut(profile) {
+                    if let Some(btns) = layers.get_mut(layer) {
+                        btns.remove(btn);
+                    }
+                }
+            }
+        }
+        self.usage_dirty.store(true, Ordering::Relaxed);
+    }
+
     /// Replace all usage counts (used by backup import). The caller persists.
     pub fn set_usage(&self, usage: DayUsageMap, pie: DayPieUsageMap, def: DayDefUsageMap) {
         if let Ok(mut u) = self.usage.lock() {

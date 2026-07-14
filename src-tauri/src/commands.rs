@@ -107,6 +107,18 @@ pub(crate) fn reset_usage(state: tauri::State<'_, AppState>) {
     config::save_all_usage(&state.runtime);
 }
 
+/// Clear one button's usage counts (button + pie directions) and persist.
+#[tauri::command]
+pub(crate) fn reset_button_usage(
+    state: tauri::State<'_, AppState>,
+    profile: String,
+    layer: String,
+    button: String,
+) {
+    state.runtime.reset_button_usage(&profile, &layer, &button);
+    config::save_all_usage(&state.runtime);
+}
+
 /// Export a full backup (workspace + usage stats) to a user-chosen path. The
 /// caller passes the current workspace; the stats are attached from the runtime.
 #[tauri::command]
