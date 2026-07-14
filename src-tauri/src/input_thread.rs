@@ -195,9 +195,10 @@ fn run(mut processor: InputProcessor, rx: Receiver<InputMsg>, runtime: Arc<Runti
 }
 
 /// Apply an incoming message. Frame folds into `pending` as the latest value;
-/// config/reset apply immediately and clear the pressed state. Reset also doubles
-/// as "start of a new connection", so it re-arms the idle timer (so idle time that
-/// accrued while disconnected doesn't trigger a disconnect right after reconnect).
+/// config-replace applies immediately but keeps the pressed state (see below);
+/// Reset clears everything and doubles as "start of a new connection", so it
+/// re-arms the idle timer (so idle time that accrued while disconnected doesn't
+/// trigger a disconnect right after reconnect).
 fn apply(
     msg: InputMsg,
     processor: &mut InputProcessor,
@@ -210,9 +211,11 @@ fn apply(
     match msg {
         InputMsg::Frame(p, analog) => *pending = Some((p, analog)),
         InputMsg::ReplaceConfig(cfg) => {
+            // Deliberately keep pending/last_pressed: replace_config preserves
+            // the held set, so the next real frame produces no phantom edges.
+            // Injecting an empty frame here would fake a release of every held
+            // button, and the following real frame would re-press them all.
             processor.replace_config(cfg);
-            *pending = Some((ButtonSet::default(), Analog::default()));
-            *last_pressed = ButtonSet::default();
         }
         InputMsg::ReplaceDefinitions(defs) => processor.set_definitions(defs),
         InputMsg::Reset => {

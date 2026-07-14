@@ -343,7 +343,15 @@ impl InputProcessor {
     }
 
     pub fn replace_config(&mut self, config: AppConfig) {
+        // Keep the physically-held button set across the swap. reset() zeroes
+        // prev_buttons, which would make every still-held button a fresh down
+        // edge on the next frame — re-firing taps, re-opening pies at the
+        // current cursor, re-latching toggles — every time the 400ms debounced
+        // autosave replaces the config. Preserving it means held buttons stay
+        // released-but-inert until actually released and re-pressed.
+        let held = self.prev_buttons;
         self.reset();
+        self.prev_buttons = held;
         self.config = config;
         self.active_layers.clear();
         self.resolved = None;
