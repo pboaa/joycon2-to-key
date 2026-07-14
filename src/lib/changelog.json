@@ -1,5 +1,32 @@
 [
   {
+    "version": "0.1.11",
+    "notes": {
+      "ja": [
+        "アプリ終了時（Alt+F4 なども含む）に、押していたキーが押しっぱなしのまま残ることがある不具合を修正。",
+        "編集した直後にアプリを閉じる／更新すると、その変更が保存されないことがある不具合を修正。",
+        "自動保存のタイミングで、押し続けているボタンが再発火することがある不具合を修正。",
+        "同じキーを2つのボタンで同時に押したとき、片方を離すともう片方も離れてしまう不具合を修正。",
+        "スティックのデッドゾーンを0にすると自動切断が働かなくなる不具合を修正。",
+        "表示スケールの異なるマルチモニタで、パイメニューの表示位置がずれる不具合を修正。",
+        "保存が同時に走ったときに古い内容で上書きされうる問題を修正。",
+        "操作の削除時に、パイや他の操作からの参照も「使用中」として表示するように。",
+        "起動時に一瞬白い画面が出るのを軽減（アプリの背景色で表示）。"
+      ],
+      "en": [
+        "Fixed keys sometimes staying held down after quitting the app (including via Alt+F4).",
+        "Fixed edits made right before closing or updating the app not being saved.",
+        "Fixed a held button re-firing when the app auto-saved in the background.",
+        "Fixed releasing one button dropping a key that another button was still holding.",
+        "Fixed idle auto-disconnect not working when the stick deadzone was set to 0.",
+        "Fixed the pie menu appearing in the wrong spot on multi-monitor setups with different display scales.",
+        "Fixed a possible stale overwrite when two saves ran at once.",
+        "Deleting an operation now also lists pie/other-operation references as “in use”.",
+        "Reduced the brief white screen at startup (shows the app background instead)."
+      ]
+    }
+  },
+  {
     "version": "0.1.10",
     "notes": {
       "ja": [
