@@ -548,6 +548,12 @@ export const en: Record<string, string> = {
   "接続に失敗しました: {{error}}": "Connection failed: {{error}}",
   "保存に失敗しました: {{error}}": "Save failed: {{error}}",
 
+  // ── Import risk warning ──
+  "このバックアップには次の操作を送るボタンが含まれます:":
+    "This backup contains buttons that send the following:",
+  "信頼できる提供元のファイルだけを取り込んでください。":
+    "Only import files from a source you trust.",
+
   // ── Workspace I/O ──
   "エクスポート失敗: {{error}}": "Export failed: {{error}}",
   "読み込み失敗: {{error}}": "Load failed: {{error}}",

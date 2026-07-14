@@ -13,6 +13,7 @@ import type {
   InputCommand,
   PieSlice,
   PressConfig,
+  WorkspaceFile,
 } from "./types";
 import { isDefRef } from "./defRef";
 
@@ -141,6 +142,35 @@ export function pressRisk(
     level = worse(level, r.level);
     r.reasons.forEach((x) => reasons.add(x));
   });
+  return { level, reasons: [...reasons] };
+}
+
+/** Worst risk across everything an imported workspace could fire — every
+ * definition, every profile button, and every saved pie menu. Used to warn
+ * before importing a shared / attacker-supplied backup, since the file's names
+ * and definitions are all attacker-controlled. */
+export function workspaceRisk(ws: WorkspaceFile): RiskResult {
+  const definitions = ws.definitions?.definitions;
+  const resolve = makeInputResolver(definitions);
+  let level: RiskLevel = "none";
+  const reasons = new Set<string>();
+  const fold = (r: RiskResult) => {
+    level = worse(level, r.level);
+    r.reasons.forEach((x) => reasons.add(x));
+  };
+  for (const d of definitions ?? []) fold(pressRisk(d.press, resolve));
+  for (const profile of Object.values(ws.profiles ?? {})) {
+    for (const layer of Object.values(profile.layers ?? {})) {
+      for (const b of Object.values(layer.buttons ?? {})) fold(pressRisk(b.press, resolve));
+    }
+  }
+  for (const pm of ws.pieMenus ?? []) {
+    const inputs = [
+      ...(pm.slices ?? []).flatMap((s) => s.inputs ?? []),
+      ...(pm.center ?? []),
+    ];
+    fold(analyzeInputs(inputs, resolve));
+  }
   return { level, reasons: [...reasons] };
 }
 

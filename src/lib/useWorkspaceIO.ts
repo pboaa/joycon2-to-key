@@ -10,6 +10,7 @@ import {
 import { useStore, WORKSPACE_VERSION } from "../store";
 import { useConfirm } from "../components/Confirm";
 import { toast } from "./toast";
+import { workspaceRisk } from "./inputRisk";
 import type { WorkspaceFile } from "./types";
 
 const JSON_FILTER = [{ name: "JSON", extensions: ["json"] }];
@@ -57,12 +58,28 @@ export function useWorkspaceIO() {
       return;
     }
 
+    // The imported file's names/definitions are attacker-controlled, so surface
+    // the actual risky input primitives it would install (Win chords, typed
+    // text, …) in the consent dialog — not just the generic "replace everything".
+    let message = t("現在の{{scope}}をすべて置き換えます。よろしいですか？", {
+      scope: t("設定・操作・プロファイル・統計"),
+    });
+    const risk = workspaceRisk(info.workspace);
+    if (risk.level !== "none") {
+      const reasons = risk.reasons.map((r) => `・${t(r)}`).join("\n");
+      message +=
+        "\n\n" +
+        t("このバックアップには次の操作を送るボタンが含まれます:") +
+        "\n" +
+        reasons +
+        "\n\n" +
+        t("信頼できる提供元のファイルだけを取り込んでください。");
+    }
+
     if (
       !(await confirm({
         title: t("バックアップのインポート"),
-        message: t("現在の{{scope}}をすべて置き換えます。よろしいですか？", {
-          scope: t("設定・操作・プロファイル・統計"),
-        }),
+        message,
         danger: true,
         okLabel: t("置き換える"),
       }))
