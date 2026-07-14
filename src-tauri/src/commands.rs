@@ -332,6 +332,12 @@ pub(crate) async fn save_workspace(
     state: tauri::State<'_, AppState>,
     workspace: config::WorkspaceFile,
 ) -> Result<String, String> {
+    // Async commands run in parallel; serialize the write + runtime swap so two
+    // overlapping saves can't race the shared workspace.tmp or apply an older
+    // snapshot after a newer one. (The frontend also serializes its saves; this
+    // is the backend guarantee.)
+    static SAVE_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    let _guard = SAVE_LOCK.lock().unwrap_or_else(|p| p.into_inner());
     let path = config::workspace_path();
     config::save_workspace(&path, &workspace)?;
     // Apply live: settings drive the input thread (pie/scroll/idle), the

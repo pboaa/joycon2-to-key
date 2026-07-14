@@ -95,6 +95,11 @@ pub fn today_key() -> String {
 /// knows "the usage state lives in these three files" — used by the reset,
 /// backup-apply and periodic-flush paths.
 pub fn save_all_usage(runtime: &RuntimeSettings) {
+    // Called from both the input thread (periodic flush) and IPC commands
+    // (reset / backup-apply / exit hook) — serialize so two writers can't race
+    // the same temp files.
+    static SAVE_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    let _guard = SAVE_LOCK.lock().unwrap_or_else(|p| p.into_inner());
     let _ = save_usage(&usage_path(), &runtime.snapshot_usage());
     let _ = save_pie_usage(&pie_usage_path(), &runtime.snapshot_pie_usage());
     let _ = save_def_usage(&def_usage_path(), &runtime.snapshot_def_usage());

@@ -252,22 +252,36 @@ export const useStore = create<StoreState>((set, get) => ({
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 // Guard so hydrate-triggered changes don't save (avoids a needless write-back right after load).
 let suppressSave = false;
+// Saves run strictly one at a time. Without this, a debounced flush still in
+// flight can overlap a saveNow()/import save; the IPC calls run in parallel on
+// the Rust side, and the OLDER snapshot can finish last — leaving workspace.json
+// one edit behind (or two writers racing the same temp file).
+let saveChain: Promise<unknown> = Promise.resolve();
 
-/** Save the current snapshot (profiles are sanitized on write). Returns the save path. */
-export async function flush(): Promise<string> {
+/** Save the current state (profiles are sanitized on write), serialized behind
+ * any in-flight save. The snapshot is taken when this save actually RUNS (not
+ * when queued), so a queued save always writes the newest state. Returns the
+ * save path. */
+export function flush(): Promise<string> {
   if (saveTimer !== null) {
     clearTimeout(saveTimer);
     saveTimer = null;
   }
-  const s = useStore.getState();
-  const out: WorkspaceFile = {
-    version: WORKSPACE_VERSION,
-    settings: s.settings,
-    definitions: { version: 1, groups: s.groups, definitions: s.definitions },
-    pieMenus: s.pieMenus,
-    profiles: sanitizeProfiles(s.profiles ?? {}),
-  };
-  return saveWorkspace(out);
+  const run = saveChain.then(() => {
+    const s = useStore.getState();
+    const out: WorkspaceFile = {
+      version: WORKSPACE_VERSION,
+      settings: s.settings,
+      definitions: { version: 1, groups: s.groups, definitions: s.definitions },
+      pieMenus: s.pieMenus,
+      profiles: sanitizeProfiles(s.profiles ?? {}),
+    };
+    return saveWorkspace(out);
+  });
+  // The chain must survive a failed save (callers see the rejection; the next
+  // save still runs).
+  saveChain = run.catch(() => {});
+  return run;
 }
 
 function scheduleSave() {
