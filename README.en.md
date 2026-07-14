@@ -33,7 +33,9 @@ Built with [Tauri](https://tauri.app/) v2 + React + TypeScript. **Windows only**
 ## Features
 
 - **Direct BLE connection** — connects straight to the Joy-Con 2 (L or R), with
-  an always-on reconnect loop that survives the controller's sync/pair button.
+  an always-on reconnect loop: after a drop it keeps waiting and reconnects
+  automatically once you press the controller's sync button (no need to hit
+  Start again in the app).
 - **Key / mouse / scroll** — assign each button a keyboard shortcut, mouse click
   (incl. double-click), or wheel scroll. Modes: **tap**, **hold** (press-and-hold),
   **toggle** (latch on/off), and **repeat** (auto-repeat while held).
