@@ -373,8 +373,11 @@ impl InputProcessor {
         release_all();
     }
 
-    pub fn process(&mut self, pressed: ButtonSet, analog: Analog) {
+    /// Returns true when the stick drove the cursor this tick, so the idle timer
+    /// can count stick-only cursor motion (slow drawing) as activity.
+    pub fn process(&mut self, pressed: ButtonSet, analog: Analog) -> bool {
         let mut pressed = pressed;
+        let mut stick_moved = false;
 
         // Flush usage counts to disk at most every few seconds when they changed.
         if self.last_usage_flush.elapsed() >= Duration::from_secs(5)
@@ -412,7 +415,8 @@ impl InputProcessor {
                 // Convert the stick-deadzone setting (0–50%) to 0..1.
                 let dz = (self.runtime.stick_deadzone.load(Ordering::Relaxed) as f32 / 100.0)
                     .clamp(0.0, 0.9);
-                self.cursor
+                stick_moved = self
+                    .cursor
                     .apply_stick(analog.stick, stick_speed as f32, dz);
                 pressed = pressed.without_stick_directions();
             }
@@ -449,7 +453,7 @@ impl InputProcessor {
         // Skip the (Win32-heavy) button handling when nothing changed. Keep
         // ticking while a tap-repeat is running.
         if pressed == self.prev_buttons && self.repeat_timers.is_empty() {
-            return;
+            return stick_moved;
         }
 
         let now = Instant::now();
@@ -476,5 +480,6 @@ impl InputProcessor {
         }
 
         self.prev_buttons = pressed;
+        stick_moved
     }
 }

@@ -26,22 +26,25 @@ pub(super) struct CursorMotion {
 
 impl CursorMotion {
     /// Move the cursor from the analog stick position. `deadzone` is the radial
-    /// centre cutoff (0..1). Called every tick while stick-mouse is on.
-    pub(super) fn apply_stick(&mut self, (x, y): (f32, f32), speed: f32, deadzone: f32) {
+    /// centre cutoff (0..1). Called every tick while stick-mouse is on. Returns
+    /// true when the stick actually drove the cursor (past the deadzone) — the
+    /// idle timer treats that as user activity so slow drawing isn't cut off.
+    pub(super) fn apply_stick(&mut self, (x, y): (f32, f32), speed: f32, deadzone: f32) -> bool {
         if speed <= 0.0 {
             self.reset();
-            return;
+            return false;
         }
         let mag = (x * x + y * y).sqrt();
         if mag < deadzone {
             // Crisp stop on release (no easing tail) so drawing lands precisely.
             self.reset();
-            return;
+            return false;
         }
         // Rescale past the deadzone to 0..1, preserving direction.
         let scale = ((mag - deadzone) / (1.0 - deadzone)).clamp(0.0, 1.0) / mag;
         // Stick up is +y; screen up is -dy.
         self.emit_delta(x * scale * speed, -y * scale * speed);
+        true
     }
 
     /// Zero the smoothing/sub-pixel state (stick centred, feature off, or reset).

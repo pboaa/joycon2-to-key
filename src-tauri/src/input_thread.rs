@@ -137,20 +137,30 @@ fn run(mut processor: InputProcessor, rx: Receiver<InputMsg>, runtime: Arc<Runti
 
         match pending {
             Some((frame, analog)) => {
-                if !frame.is_empty() {
+                last_pressed = frame;
+                last_analog = analog;
+                // A button press OR stick-driven cursor motion counts as activity
+                // (moving the cursor with gentle stick pressure sets no button
+                // bits, so `frame.is_empty()` alone would let slow drawing idle
+                // out mid-stroke).
+                let stick_moved = processor.process(frame, analog);
+                if !frame.is_empty() || stick_moved {
                     last_activity = Instant::now();
                     idle_released = false;
                     idle_warned = false;
                 }
-                last_pressed = frame;
-                last_analog = analog;
-                processor.process(frame, analog);
             }
             None => {
                 // No new frame. Re-process the last state to drive tap-repeat and
                 // stick/gyro mouse (if nothing changed and nothing repeats, process
-                // returns immediately).
-                processor.process(last_pressed, last_analog);
+                // returns immediately). A still-deflected stick keeps moving the
+                // cursor, so that also refreshes activity.
+                let stick_moved = processor.process(last_pressed, last_analog);
+                if stick_moved {
+                    last_activity = Instant::now();
+                    idle_released = false;
+                    idle_warned = false;
+                }
             }
         }
 
