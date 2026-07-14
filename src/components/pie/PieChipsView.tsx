@@ -36,7 +36,8 @@ export function PieChipsView({
   const centreIcon = defRefIcon(center, resolveDefIcon);
   const centreColor = defRefColor(center, resolveDefColor);
   // Compact centre box (~half a direction chip's width), auto-shrinking label.
-  const CTR_W = 64;
+  // Narrow enough that the left/right direction chips (radius 82) clear it.
+  const CTR_W = 50;
   const CTR_H = 28;
   const ctrBg = centreHot
     ? hexToRgba(style.accent, Math.min(1, 0.85 * accentK))
@@ -57,9 +58,10 @@ export function PieChipsView({
   ) => {
     // Fixed size for every direction chip so the layout stays a tidy, uniform
     // grid regardless of label length (content-sizing made short/long labels
-    // different widths, which read as messy). Overflow ellipsizes. 112 keeps the
-    // left/right chips inside the 280 viewBox at radius 82.
-    const W = 112;
+    // different widths, which read as messy). Overflow ellipsizes. 106 fits the
+    // left/right chips inside the 280 viewBox at radius 82 while leaving a gap to
+    // the (smaller) centre hub so they never overlap.
+    const W = 106;
     const H = 30;
     const bg = isHot
       ? hexToRgba(style.accent, Math.min(1, 0.85 * accentK))
