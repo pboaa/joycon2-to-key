@@ -9,6 +9,7 @@
 import { create } from "zustand";
 import { check, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { flush, useStore } from "../store";
 
 export type UpdaterPhase =
   | "idle"
@@ -118,6 +119,14 @@ export const useUpdater = create<UpdaterState>((set, get) => ({
     const update = get().update;
     if (!update) return;
     set({ phase: "downloading", progress: null, error: null });
+    // Flush any debounced edits before the installer takes over — on Windows
+    // the install/relaunch terminates this process, which would drop a save
+    // still sitting in the 400ms window.
+    try {
+      if (useStore.getState().loaded) await flush();
+    } catch {
+      // best-effort; updating must not be blocked by a failed save
+    }
     try {
       let total = 0;
       let downloaded = 0;

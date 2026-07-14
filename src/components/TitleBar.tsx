@@ -1,12 +1,19 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useTranslation } from "react-i18next";
 import { releaseAllInputs } from "../lib/tauri";
-import { useStore } from "../store";
+import { flush, useStore } from "../store";
 import { BatteryLine } from "./main/BatteryLine";
 import { ActiveProfileChip } from "./main/ActiveProfileChip";
 import appIcon from "../assets/app-icon.png";
 
 async function closeWindow() {
+  try {
+    // Save any edits still sitting in the 400ms debounce window — otherwise
+    // "change one thing and close" silently loses that change.
+    if (useStore.getState().loaded) await flush();
+  } catch {
+    // best-effort; closing must not be blocked by a failed save
+  }
   try {
     await releaseAllInputs();
   } catch {
