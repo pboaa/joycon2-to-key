@@ -229,7 +229,7 @@ impl GlobalSettings {
         "#5a5ae0".to_string()
     }
     fn default_pie_overlay_design() -> String {
-        "chips".to_string()
+        "pie".to_string()
     }
 }
 

@@ -127,7 +127,7 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   pieOverlayLine: "#ffffff",
   pieOverlayLabels: true,
   pieOverlayLabelsCurrentOnly: false,
-  pieOverlayDesign: "chips",
+  pieOverlayDesign: "pie",
   pieOverlayDividers: true,
   pieOverlayDots: true,
   pieOverlayLabelColor: "#ffffff",
