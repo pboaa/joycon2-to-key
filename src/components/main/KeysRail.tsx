@@ -155,6 +155,7 @@ export function KeysRail({
       <RailHeader title="プロファイル" />
       <div
         {...(readOnly ? {} : profileDnd.containerProps)}
+        data-tour="profiles"
         className={`max-h-[38%] ${LIST_BODY_CLS}`}
       >
         {s.profileNames.map((name, i) => {

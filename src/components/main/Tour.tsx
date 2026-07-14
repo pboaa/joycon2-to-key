@@ -48,21 +48,27 @@ const STEPS: Step[] = [
     body: "右のパネルでキー入力・操作・パイなどを割り当てます。",
   },
   {
+    page: "keys",
+    target: "profiles",
+    title: "④ アプリ別プロファイル",
+    body: "使うアプリごとに割り当てを切り替えられます。左のプロファイル一覧で追加・切り替えします（前面のアプリに応じて自動で切り替わります）。",
+  },
+  {
     page: "defs",
     target: "nav-defs",
-    title: "④ 保存した操作",
+    title: "⑤ 保存した操作",
     body: "よく使う操作を登録して使い回せます。",
   },
   {
     page: "stats",
     target: "nav-stats",
-    title: "⑤ 統計",
+    title: "⑥ 統計",
     body: "ボタンの使用回数を確認できます。",
   },
   {
     page: "settings",
     target: "nav-settings",
-    title: "⑥ 設定・バックアップ",
+    title: "⑦ 設定・バックアップ",
     body: "全体の設定とバックアップはここから。",
   },
   {

@@ -710,9 +710,10 @@ export const en: Record<string, string> = {
   "① 接続": "① Connect",
   "② ボタンを選ぶ": "② Pick a button",
   "③ 割り当てる": "③ Assign it",
-  "④ 保存した操作": "④ Saved actions",
-  "⑤ 統計": "⑤ Stats",
-  "⑥ 設定・バックアップ": "⑥ Settings & backup",
+  "④ アプリ別プロファイル": "④ Per-app profiles",
+  "⑤ 保存した操作": "⑤ Saved actions",
+  "⑥ 統計": "⑥ Stats",
+  "⑦ 設定・バックアップ": "⑦ Settings & backup",
   準備完了: "You're all set",
   "さっそくボタンにキーや操作を割り当ててみましょう。":
     "Go ahead and assign a key or action to a button.",
@@ -756,6 +757,8 @@ export const en: Record<string, string> = {
     "Save an action once and reuse it from any button (organized in folders) — no need to rebuild it each time.",
   "よく使う操作を登録して使い回せます。":
     "Register actions you use often and reuse them.",
+  "使うアプリごとに割り当てを切り替えられます。左のプロファイル一覧で追加・切り替えします（前面のアプリに応じて自動で切り替わります）。":
+    "Keep separate assignments per app. Add and switch profiles in the list on the left — they switch automatically based on the foreground app.",
   "ボタンに割り当てるとリンクされ、元の操作を編集すると割り当て先すべてに反映されます。":
     "Assigning to a button links it — editing the original action updates every button that uses it.",
   "2〜8 方向＋中央（その場）に操作を割り当てられます。":
