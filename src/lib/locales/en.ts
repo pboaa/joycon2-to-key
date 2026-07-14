@@ -26,6 +26,9 @@ export const en: Record<string, string> = {
   今後表示しない: "Don't show again",
   このページのヘルプ: "Help for this page",
   使用中のボタン: "Assigned to",
+  この操作を参照している操作: "Operations referencing this one",
+  "入力の中からこの操作を参照しています（削除すると参照は無効になります）":
+    "References this operation from its inputs (deleting it leaves the reference dead)",
   最近使った操作: "Recently used",
   最近使った: "Recently used",
   このボタンを編集: "Edit this button",

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
+import { IconLink } from "@tabler/icons-react";
 import { useStore } from "../../store";
-import { findDefUsages } from "../../lib/defUsage";
+import { findDefRefsInDefinitions, findDefUsages } from "../../lib/defUsage";
 import { buttonLabel } from "../../lib/keyCatalog";
 import { isDefaultProfile } from "../../lib/config/profiles";
 
@@ -18,7 +19,11 @@ export function DefUsageChips({ defId }: { defId: string }) {
   const setSelectedLayer = useStore((s) => s.setSelectedLayer);
   const setSelectedButton = useStore((s) => s.setSelectedButton);
 
+  const definitions = useStore((s) => s.definitions);
   const usages = findDefUsages(profiles, defId);
+  // Other saved operations that reference this one from inside their inputs —
+  // deleting this operation would leave those references silently dead.
+  const refDefs = findDefRefsInDefinitions(definitions, defId);
 
   const jump = (profile: string, layer: string, button: string) => {
     setSelectedProfile(profile);
@@ -59,6 +64,26 @@ export function DefUsageChips({ defId }: { defId: string }) {
             );
           })}
         </div>
+      )}
+      {refDefs.length > 0 && (
+        <>
+          <div className="text-caption font-semibold text-text2 pt-1">
+            {t("この操作を参照している操作")}
+            <span className="ml-1 text-text3">（{refDefs.length}）</span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {refDefs.map((d) => (
+              <span
+                key={d.id}
+                data-tip={t("入力の中からこの操作を参照しています（削除すると参照は無効になります）")}
+                className="inline-flex items-center gap-1 rounded-row border border-border bg-bg2 px-1.5 py-0.5 text-caption text-text2"
+              >
+                <IconLink size={10} aria-hidden className="text-text3" />
+                {d.name || t("(名前なし)")}
+              </span>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
