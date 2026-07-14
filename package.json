@@ -1,7 +1,7 @@
 {
   "name": "joycon2-to-key",
   "private": true,
-  "version": "0.1.7",
+  "version": "0.1.8",
   "type": "module",
   "description": "Map Nintendo Switch 2 Joy-Con (Joy-Con 2) BLE input to Windows keyboard and mouse actions.",
   "license": "GPL-3.0-or-later",

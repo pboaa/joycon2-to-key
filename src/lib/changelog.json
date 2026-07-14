@@ -1,5 +1,20 @@
 [
   {
+    "version": "0.1.8",
+    "notes": {
+      "ja": [
+        "「すべて初期化」が一度で効かず、何度か押す必要があった不具合を修正。",
+        "「すべて初期化」で統計と設定も初期化されるように（言語・テーマ・表示倍率は保持）。",
+        "統計をボタンごとに個別リセットできるように（発火回数の横のボタンから）。"
+      ],
+      "en": [
+        "Fixed “Reset everything” not taking on the first try (it needed repeating).",
+        "“Reset everything” now also clears stats and settings (language, theme, and UI scale are kept).",
+        "Stats can now be reset per button (from the control next to the activation count)."
+      ]
+    }
+  },
+  {
     "version": "0.1.7",
     "notes": {
       "ja": [
