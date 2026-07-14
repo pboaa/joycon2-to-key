@@ -35,8 +35,10 @@ export function PieChipsView({
   const centreColor = defRefColor(center, resolveDefColor);
   // The centre (in-place) chip is a narrower version of the same chip — single
   // line, ellipsised — so it stays inside its box and the left/right direction
-  // chips (radius 82) clear it instead of overlapping.
+  // chips (radius 82) clear it instead of overlapping. Its label is smaller
+  // still, since the narrow box barely fits text.
   const CTR_W = 50;
+  const CTR_FONT = 9;
   const chip = (
     key: number | string,
     cx: number,
@@ -51,9 +53,11 @@ export function PieChipsView({
     // read as messy). Overflow ellipsises on one line — no wrapping. 106 fits the
     // left/right chips inside the 280 viewBox at radius 82.
     width = 106,
+    fontSize = 11,
   ) => {
     const W = width;
     const H = 30;
+    const iconSize = Math.round(fontSize + 1);
     const bg = isHot
       ? hexToRgba(style.accent, Math.min(1, 0.85 * accentK))
       : hexToRgba(style.bg, Math.min(1, k + 0.35));
@@ -86,7 +90,7 @@ export function PieChipsView({
             background: bg,
             border: `1px ${style.lineStyle} ${border}`,
             color: col,
-            fontSize: 12.5,
+            fontSize,
             fontWeight: 600,
             whiteSpace: "nowrap",
             overflow: "hidden",
@@ -97,7 +101,7 @@ export function PieChipsView({
             <span style={{ display: "inline-flex", flexShrink: 0 }}>
               {/* Current slice keeps the highlight `col` for legibility on the
                   accent fill; others take the operation's saved tint if any. */}
-              <OpIcon name={icon} size={13} color={isHot ? undefined : iconColor} />
+              <OpIcon name={icon} size={iconSize} color={isHot ? undefined : iconColor} />
             </span>
           )}
           <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{label || "—"}</span>
@@ -108,7 +112,7 @@ export function PieChipsView({
   return (
     <svg viewBox={PIE.viewBox} width="100%" height="100%">
       {hasCenter ? (
-        chip(-1, PIE.cx, PIE.cy, centreLabel, centreIcon, true, centreHot, centreColor, CTR_W)
+        chip(-1, PIE.cx, PIE.cy, centreLabel, centreIcon, true, centreHot, centreColor, CTR_W, CTR_FONT)
       ) : (
         <circle
           cx={PIE.cx}
