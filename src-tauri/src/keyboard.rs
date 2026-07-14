@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::sync::Mutex;
 
 use once_cell::sync::Lazy;
@@ -34,25 +34,16 @@ pub fn send_actions(actions: &[InputAction]) {
 
     let mut state = HELD_STATE.lock().unwrap();
 
-    let modifier_changes: Vec<(u16, bool)> = actions
+    let modifier_codes_in_batch: HashSet<u16> = actions
         .iter()
         .filter_map(|a| match a {
-            InputAction::Key { vk, pressed } if is_modifier_vk(*vk) => Some((*vk, *pressed)),
+            InputAction::Key { vk, pressed: _ } if is_modifier_vk(*vk) => Some(*vk),
             _ => None,
         })
         .collect();
-    let modifier_codes_in_batch: HashSet<u16> = modifier_changes.iter().map(|&(c, _)| c).collect();
 
-    let mut held_before: Vec<u16> = state.modifiers.iter().copied().collect();
+    let mut held_before: Vec<u16> = state.modifiers.keys().copied().collect();
     held_before.sort_unstable();
-
-    for &(code, pressed) in &modifier_changes {
-        if pressed {
-            state.modifiers.insert(code);
-        } else {
-            state.modifiers.remove(&code);
-        }
-    }
 
     let temp_releases: Vec<u16> = held_before
         .iter()
@@ -66,19 +57,43 @@ pub fn send_actions(actions: &[InputAction]) {
         inputs.push(make_key(code, false));
     }
 
+    // Held keys are refcounted per vk (two buttons can hold the same key —
+    // e.g. two Ctrl holds, or a latched Ctrl toggle plus a Ctrl+C tap). A down
+    // is physically sent only on 0→1 and an up only on 1→0, so releasing one
+    // holder no longer yanks the key out from under the other.
+    fn count_key(counts: &mut HashMap<u16, u32>, vk: u16, pressed: bool) -> bool {
+        if pressed {
+            let c = counts.entry(vk).or_insert(0);
+            *c += 1;
+            *c == 1
+        } else {
+            match counts.get_mut(&vk) {
+                Some(c) if *c > 1 => {
+                    *c -= 1;
+                    false
+                }
+                Some(_) => {
+                    counts.remove(&vk);
+                    true
+                }
+                // Untracked release (state was drained by release_all while an
+                // effect still logically held) — emit the redundant up anyway.
+                None => true,
+            }
+        }
+    }
+
     for action in actions {
         match action {
             InputAction::Key { vk, pressed } => {
-                // Track non-modifier downs so release_all can free them on exit
-                // (modifiers are already tracked by the pre-pass above).
-                if !is_modifier_vk(*vk) {
-                    if *pressed {
-                        state.keys.insert(*vk);
-                    } else {
-                        state.keys.remove(vk);
-                    }
+                let counts = if is_modifier_vk(*vk) {
+                    &mut state.modifiers
+                } else {
+                    &mut state.keys
+                };
+                if count_key(counts, *vk, *pressed) {
+                    inputs.push(make_key(*vk, *pressed));
                 }
-                inputs.push(make_key(*vk, *pressed));
             }
             InputAction::Mouse { button, pressed } => {
                 inputs.push(make_mouse(*button, *pressed));
@@ -124,8 +139,8 @@ pub fn release_all() {
     if state.modifiers.is_empty() && state.keys.is_empty() && state.mouse.is_empty() {
         return;
     }
-    let mut keys: Vec<u16> = state.modifiers.drain().collect();
-    keys.extend(state.keys.drain());
+    let mut keys: Vec<u16> = state.modifiers.drain().map(|(vk, _)| vk).collect();
+    keys.extend(state.keys.drain().map(|(vk, _)| vk));
     let mice: Vec<MouseButton> = state.mouse.drain().collect();
     drop(state);
 
@@ -226,19 +241,21 @@ fn is_alt_down(input: &INPUT) -> bool {
 }
 
 struct HeldState {
-    modifiers: HashSet<u16>,
-    /// Non-modifier keys currently down (hold-mode letters, toggles, …), so the
-    /// exit path can release *everything* synchronously — the processor's
-    /// per-effect releases live on the input thread, which may be blocked (or
-    /// already dead) when the app is quitting.
-    keys: HashSet<u16>,
+    /// Modifier vks currently down → number of logical holders (refcount, so
+    /// two sources holding the same modifier don't release each other).
+    modifiers: HashMap<u16, u32>,
+    /// Non-modifier keys currently down (hold-mode letters, toggles, …), also
+    /// refcounted, and tracked so the exit path can release *everything*
+    /// synchronously — the processor's per-effect releases live on the input
+    /// thread, which may be blocked (or already dead) when the app is quitting.
+    keys: HashMap<u16, u32>,
     mouse: HashSet<MouseButton>,
 }
 
 static HELD_STATE: Lazy<Mutex<HeldState>> = Lazy::new(|| {
     Mutex::new(HeldState {
-        modifiers: HashSet::new(),
-        keys: HashSet::new(),
+        modifiers: HashMap::new(),
+        keys: HashMap::new(),
         mouse: HashSet::new(),
     })
 });
