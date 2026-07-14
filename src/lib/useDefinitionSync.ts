@@ -144,11 +144,15 @@ export function useDefinitionSync(
   // profiles too and confirms once, up front).
   const resetAllCore = async () => {
     const seeded = await resetDefinitions();
+    // Read fresh state after the await (not the render closure) so a profile
+    // edit that landed during the IPC isn't clobbered by a stale-base setConfig.
+    const st = useStore.getState();
+    const cfg = st.profiles;
     // Unlink every button that referenced an old definition, keeping its last
     // cached keys so it still works.
-    if (config) {
-      const ids = new Set(definitions.map((d) => d.id));
-      const cv = unlinkAssignments(config, ids);
+    if (cfg) {
+      const ids = new Set(st.definitions.map((d) => d.id));
+      const cv = unlinkAssignments(cfg, ids);
       if (cv) setConfig(cv);
     }
     lib.replaceAll(seeded.groups, seeded.definitions);
@@ -247,15 +251,21 @@ export function useDefinitionSync(
   // destruction. Snapshot restores the folder and any definition group-links.
   const removeGroup = (id: string) => {
     const target = groups.find((g) => g.id === id);
-    const prevGroups = groups;
-    const prevDefs = definitions;
+    const at = groups.findIndex((g) => g.id === id);
     lib.removeGroup(id);
+    if (!target) return;
     toast.undo(
-      t("フォルダ「{{name}}」を削除しました", {
-        name: target?.name || t("(名前なし)"),
-      }),
+      t("フォルダ「{{name}}」を削除しました", { name: target.name || t("(名前なし)") }),
       t("元に戻す"),
-      () => lib.replaceAll(prevGroups, prevDefs),
+      () => {
+        // Re-insert just this (empty) folder into the latest library at its slot,
+        // so library edits made while the toast was up survive.
+        const st = useStore.getState();
+        if (st.groups.some((g) => g.id === id)) return;
+        const g = st.groups.slice();
+        g.splice(at < 0 ? g.length : Math.min(at, g.length), 0, target);
+        st.setLibrary(g, st.definitions);
+      },
     );
   };
   const removeGroupWithDefs = (id: string) => {
