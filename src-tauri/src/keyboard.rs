@@ -68,7 +68,18 @@ pub fn send_actions(actions: &[InputAction]) {
 
     for action in actions {
         match action {
-            InputAction::Key { vk, pressed } => inputs.push(make_key(*vk, *pressed)),
+            InputAction::Key { vk, pressed } => {
+                // Track non-modifier downs so release_all can free them on exit
+                // (modifiers are already tracked by the pre-pass above).
+                if !is_modifier_vk(*vk) {
+                    if *pressed {
+                        state.keys.insert(*vk);
+                    } else {
+                        state.keys.remove(vk);
+                    }
+                }
+                inputs.push(make_key(*vk, *pressed));
+            }
             InputAction::Mouse { button, pressed } => {
                 inputs.push(make_mouse(*button, *pressed));
                 if *pressed {
@@ -107,11 +118,14 @@ pub fn send_actions(actions: &[InputAction]) {
 }
 
 pub fn release_all() {
-    let mut state = HELD_STATE.lock().unwrap();
-    if state.modifiers.is_empty() && state.mouse.is_empty() {
+    let Ok(mut state) = HELD_STATE.lock() else {
+        return; // poisoned on another thread's panic — nothing sane to release
+    };
+    if state.modifiers.is_empty() && state.keys.is_empty() && state.mouse.is_empty() {
         return;
     }
-    let keys: Vec<u16> = state.modifiers.drain().collect();
+    let mut keys: Vec<u16> = state.modifiers.drain().collect();
+    keys.extend(state.keys.drain());
     let mice: Vec<MouseButton> = state.mouse.drain().collect();
     drop(state);
 
@@ -213,12 +227,18 @@ fn is_alt_down(input: &INPUT) -> bool {
 
 struct HeldState {
     modifiers: HashSet<u16>,
+    /// Non-modifier keys currently down (hold-mode letters, toggles, …), so the
+    /// exit path can release *everything* synchronously — the processor's
+    /// per-effect releases live on the input thread, which may be blocked (or
+    /// already dead) when the app is quitting.
+    keys: HashSet<u16>,
     mouse: HashSet<MouseButton>,
 }
 
 static HELD_STATE: Lazy<Mutex<HeldState>> = Lazy::new(|| {
     Mutex::new(HeldState {
         modifiers: HashSet::new(),
+        keys: HashSet::new(),
         mouse: HashSet::new(),
     })
 });

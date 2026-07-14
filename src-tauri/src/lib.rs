@@ -103,6 +103,12 @@ pub fn run() {
                     tauri::WindowEvent::CloseRequested { .. } | tauri::WindowEvent::Destroyed
                 )
             {
+                // Release injected inputs SYNCHRONOUSLY before exiting. Routing
+                // through the input thread (release_all_inputs) only queues a
+                // message that races process death — and Alt+F4 / taskbar-close
+                // never even go through the frontend's best-effort release. A
+                // key left down here stays down system-wide after we're gone.
+                keyboard::release_all();
                 window.app_handle().exit(0);
             }
         })
@@ -135,6 +141,16 @@ pub fn run() {
             commands::preview_pie_overlay,
             commands::close_pie_overlay_preview,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application")
+        .run(|app, event| {
+            // Last-chance cleanup on EVERY exit path (✕ button, Alt+F4, updater
+            // relaunch, exit(0)): release injected inputs synchronously and
+            // flush pending usage counts. Idempotent — the window-event arm may
+            // have already released.
+            if let tauri::RunEvent::Exit = event {
+                keyboard::release_all();
+                config::save_all_usage(&app.state::<AppState>().runtime);
+            }
+        });
 }
