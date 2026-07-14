@@ -1,5 +1,20 @@
 [
   {
+    "version": "0.1.12",
+    "notes": {
+      "ja": [
+        "パイメニューで発動した操作が、操作別の統計に加算されない不具合を修正。",
+        "使用中の操作を削除するときに確認を表示するように（未使用のものは従来どおり即削除＋元に戻す）。",
+        "使い方ツアーに「アプリ別プロファイル」の説明を追加。"
+      ],
+      "en": [
+        "Fixed operations fired from a pie menu not being counted in the per-operation stats.",
+        "Deleting an operation that's in use now asks for confirmation (unused ones still delete instantly with Undo).",
+        "Added a per-app profiles step to the guided tour."
+      ]
+    }
+  },
+  {
     "version": "0.1.11",
     "notes": {
       "ja": [
