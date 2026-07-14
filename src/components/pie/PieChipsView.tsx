@@ -6,8 +6,6 @@ import { inputsLabel } from "../../lib/variants";
 import { defRefColor, defRefIcon } from "../../lib/defRef";
 import { PIE, hexToRgba, pointAt, toScreen } from "../../lib/pieGeometry";
 import { OpIcon } from "../ui/OpIcon";
-import { PieLabel } from "../PieLabel";
-import { PieRefIcon } from "./pieShared";
 import { CANCEL, type PieViewProps } from "./pieStyle";
 
 export function PieChipsView({
@@ -35,17 +33,10 @@ export function PieChipsView({
   const hasCenter = centreLabel.length > 0;
   const centreIcon = defRefIcon(center, resolveDefIcon);
   const centreColor = defRefColor(center, resolveDefColor);
-  // Compact centre box (~half a direction chip's width), auto-shrinking label.
-  // Narrow enough that the left/right direction chips (radius 82) clear it.
+  // The centre (in-place) chip is a narrower version of the same chip — single
+  // line, ellipsised — so it stays inside its box and the left/right direction
+  // chips (radius 82) clear it instead of overlapping.
   const CTR_W = 50;
-  const CTR_H = 28;
-  const ctrBg = centreHot
-    ? hexToRgba(style.accent, Math.min(1, 0.85 * accentK))
-    : hexToRgba(style.bg, Math.min(1, k + 0.35));
-  const ctrBorder = centreHot
-    ? hexToRgba(style.accent, Math.min(1, accentK))
-    : centreColor ?? HAIR;
-  const ctrCol = centreHot ? "#fff" : style.labelColor;
   const chip = (
     key: number | string,
     cx: number,
@@ -55,13 +46,13 @@ export function PieChipsView({
     on: boolean,
     isHot: boolean,
     iconColor?: string,
+    // Fixed width per chip so the layout stays a tidy, uniform grid regardless of
+    // label length (content-sizing made short/long labels different widths, which
+    // read as messy). Overflow ellipsises on one line — no wrapping. 106 fits the
+    // left/right chips inside the 280 viewBox at radius 82.
+    width = 106,
   ) => {
-    // Fixed size for every direction chip so the layout stays a tidy, uniform
-    // grid regardless of label length (content-sizing made short/long labels
-    // different widths, which read as messy). Overflow ellipsizes. 106 fits the
-    // left/right chips inside the 280 viewBox at radius 82 while leaving a gap to
-    // the (smaller) centre hub so they never overlap.
-    const W = 106;
+    const W = width;
     const H = 30;
     const bg = isHot
       ? hexToRgba(style.accent, Math.min(1, 0.85 * accentK))
@@ -117,50 +108,7 @@ export function PieChipsView({
   return (
     <svg viewBox={PIE.viewBox} width="100%" height="100%">
       {hasCenter ? (
-        <>
-          <rect
-            x={PIE.cx - CTR_W / 2}
-            y={PIE.cy - CTR_H / 2}
-            width={CTR_W}
-            height={CTR_H}
-            rx={7}
-            fill={ctrBg}
-            stroke={ctrBorder}
-            strokeWidth={1}
-            strokeDasharray={dash}
-          />
-          {centreIcon ? (
-            <>
-              <PieRefIcon
-                x={PIE.cx}
-                y={PIE.cy - 6}
-                size={12}
-                color={ctrCol}
-                iconColor={centreHot ? undefined : centreColor}
-                icon={centreIcon}
-              />
-              <PieLabel
-                x={PIE.cx}
-                y={PIE.cy + 7}
-                text={centreLabel}
-                maxWidth={CTR_W - 12}
-                base={8}
-                min={7}
-                fill={ctrCol}
-              />
-            </>
-          ) : (
-            <PieLabel
-              x={PIE.cx}
-              y={PIE.cy}
-              text={centreLabel}
-              maxWidth={CTR_W - 12}
-              base={9}
-              min={7}
-              fill={ctrCol}
-            />
-          )}
-        </>
+        chip(-1, PIE.cx, PIE.cy, centreLabel, centreIcon, true, centreHot, centreColor, CTR_W)
       ) : (
         <circle
           cx={PIE.cx}
