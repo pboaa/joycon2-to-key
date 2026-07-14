@@ -11,7 +11,12 @@ import { confirmReset } from "./confirms";
 import { toast } from "./toast";
 import { reorderById } from "./reorder";
 import { uniqueName } from "./uniqueName";
-import { mapLinkedAssignments, unlinkAssignments } from "./config/definitions";
+import {
+  assignmentKey,
+  mapLinkedAssignments,
+  relinkAssignments,
+  unlinkAssignments,
+} from "./config/definitions";
 import { linkedPress } from "./config/press";
 import { useStore } from "../store";
 import { useConfirm } from "../components/Confirm";
@@ -197,12 +202,19 @@ export function useDefinitionSync(
     }));
   };
   const remove = (id: string) => {
-    // Snapshot the library + config so the delete can be reversed from the toast
-    // (no confirm dialog for a single operation — Undo is the safety net).
+    // No confirm dialog for a single operation — Undo is the safety net.
     const target = definitions.find((d) => d.id === id);
-    const prevGroups = groups;
-    const prevDefs = definitions;
-    const prevConfig = config;
+    const targetIndex = definitions.findIndex((d) => d.id === id);
+    // Capture exactly which buttons link to this def, so Undo can re-link just
+    // those (in the latest config) rather than restoring a stale whole-config
+    // snapshot — which would wipe any edits made while the toast was up.
+    const linkedLocs = new Set<string>();
+    if (config) {
+      for (const [pn, p] of Object.entries(config))
+        for (const [ln, l] of Object.entries(p.layers))
+          for (const [btn, a] of Object.entries(l.buttons))
+            if (a.def === id) linkedLocs.add(assignmentKey(pn, ln, btn));
+    }
     lib.replaceAll(groups, definitions.filter((d) => d.id !== id));
     if (config) {
       // Drop the link but keep the last cached keys so buttons still work.
@@ -213,8 +225,20 @@ export function useDefinitionSync(
       t("「{{name}}」を削除しました", { name: target?.name || t("(名前なし)") }),
       t("元に戻す"),
       () => {
-        lib.replaceAll(prevGroups, prevDefs);
-        if (prevConfig) setConfig(prevConfig);
+        if (!target) return;
+        // Restore into the LATEST state (surgical), so intervening edits survive.
+        const st = useStore.getState();
+        if (!st.definitions.some((d) => d.id === id)) {
+          const defs = st.definitions.slice();
+          const at = targetIndex < 0 ? defs.length : Math.min(targetIndex, defs.length);
+          defs.splice(at, 0, target);
+          st.setLibrary(st.groups, defs);
+        }
+        const cfg = useStore.getState().profiles;
+        if (cfg) {
+          const relinked = relinkAssignments(cfg, linkedLocs, id, linkedPress(target));
+          if (relinked) setConfig(relinked);
+        }
       },
     );
   };

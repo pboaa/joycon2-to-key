@@ -95,13 +95,25 @@ function makeActions(
     if (!config) return;
     const next = profileOps.deleteProfile(config, name);
     if (!next) return;
-    const prevConfig = config; // full snapshot keeps profile order on undo
+    const removed = config[name]; // the deleted profile's data
+    const at = Object.keys(config).indexOf(name); // its slot, to restore order
     setConfig(next);
     if (silent) return;
     toast.undo(
       i18n.t("プロファイル「{{name}}」を削除しました", { name }),
       i18n.t("元に戻す"),
-      () => setConfig(prevConfig),
+      () => {
+        // Re-insert just this profile into the *latest* config at its original
+        // slot (surgical: edits to other profiles during the toast survive).
+        const cfg = useStore.getState().profiles ?? {};
+        if (name in cfg) return;
+        const entries = Object.entries(cfg);
+        entries.splice(at < 0 ? entries.length : Math.min(at, entries.length), 0, [
+          name,
+          removed,
+        ]);
+        setConfig(Object.fromEntries(entries));
+      },
     );
   };
   const renameProfile = (oldName: string, newName: string) => {

@@ -1,7 +1,19 @@
 // Pure helper for keeping button assignments linked to a definition in sync.
 // A linked assignment caches the definition's `press` (the runtime uses that
 // copy), so when a definition changes every assignment linked to it is updated.
-import type { AppConfig, ButtonAssignment, LayerConfig } from "../types";
+import type {
+  AppConfig,
+  ButtonAssignment,
+  LayerConfig,
+  PressConfig,
+} from "../types";
+
+/** Stable, collision-safe key for a button's location (profile / layer /
+ * button). JSON-encoded so it's unambiguous even when a name contains spaces or
+ * punctuation. Used to re-link exactly the right buttons on a delete Undo. */
+export function assignmentKey(profile: string, layer: string, btn: string): string {
+  return JSON.stringify([profile, layer, btn]);
+}
 
 /** Rebuild the config applying `map` to every button assignment. `map` returns a
  * replacement assignment, or null to leave that one unchanged. Returns a new
@@ -9,7 +21,7 @@ import type { AppConfig, ButtonAssignment, LayerConfig } from "../types";
  * the shared profile→layer→button walk behind the link/unlink helpers. */
 function mapConfigAssignments(
   config: AppConfig,
-  map: (a: ButtonAssignment) => ButtonAssignment | null,
+  map: (a: ButtonAssignment, key: string) => ButtonAssignment | null,
 ): AppConfig | null {
   let changed = false;
   const next: AppConfig = {};
@@ -18,7 +30,7 @@ function mapConfigAssignments(
     for (const [ln, l] of Object.entries(p.layers)) {
       const buttons: Record<string, ButtonAssignment> = {};
       for (const [btn, a] of Object.entries(l.buttons)) {
-        const mapped = map(a);
+        const mapped = map(a, assignmentKey(pn, ln, btn));
         if (mapped) {
           changed = true;
           buttons[btn] = mapped;
@@ -51,5 +63,21 @@ export function unlinkAssignments(
 ): AppConfig | null {
   return mapConfigAssignments(config, (a) =>
     a.def && defIds.has(a.def) ? { ...a, def: undefined } : null,
+  );
+}
+
+/** Re-link the specific button locations in `locations` (keys from
+ * {@link assignmentKey}) back to `defId`, re-caching `press`. Reverses a
+ * definition-delete's unlink surgically — only the originally-linked buttons
+ * change, so edits made elsewhere while the Undo toast was up survive. */
+export function relinkAssignments(
+  config: AppConfig,
+  locations: ReadonlySet<string>,
+  defId: string,
+  press: PressConfig,
+): AppConfig | null {
+  if (locations.size === 0) return null;
+  return mapConfigAssignments(config, (a, key) =>
+    locations.has(key) ? { ...a, def: defId, press } : null,
   );
 }
