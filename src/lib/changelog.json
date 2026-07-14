@@ -1,5 +1,18 @@
 [
   {
+    "version": "0.1.7",
+    "notes": {
+      "ja": [
+        "パイメニューの画面表示（オーバーレイ）の初期デザインを「パイ（円グラフ型）」に変更。",
+        "「チップ（Blender風）」デザインの見た目を調整（中央のはみ出しを解消し、大きさ・文字サイズを整理）。"
+      ],
+      "en": [
+        "Changed the default pie-menu overlay design to “Pie” (radial chart).",
+        "Tidied the “Chips (Blender-style)” design: the centre no longer overflows, with cleaner sizing and text."
+      ]
+    }
+  },
+  {
     "version": "0.1.6",
     "notes": {
       "ja": [
