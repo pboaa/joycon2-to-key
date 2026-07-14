@@ -199,6 +199,16 @@ impl InputProcessor {
             Some(None) => p.center.as_ref(),
         };
         if let Some(cmds) = cmds {
+            // Count each saved operation the fired slice/centre references, so an
+            // operation used via a pie shows up in the per-operation stats —
+            // mirroring the button-down path's record_def_usage for a linked def.
+            for c in cmds {
+                if let InputCommand::Def { def } = c {
+                    if !def.is_empty() {
+                        self.runtime.record_def_usage(def);
+                    }
+                }
+            }
             let cmds = self.expand_defs(cmds);
             fire_inputs(&cmds, settings);
         }
