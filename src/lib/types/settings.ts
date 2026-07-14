@@ -136,7 +136,7 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   pieOverlayLineStyle: "solid",
   pieOverlayThresholdShow: false,
   pieOverlayThresholdColor: "#5a5ae0",
-  pieCancelOutside: false,
+  pieCancelOutside: true,
   usageRetentionDays: 0,
   titlebarBattery: false,
 };

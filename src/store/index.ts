@@ -325,9 +325,14 @@ export async function bootstrapStore(): Promise<void> {
       getConfigPath().catch(() => ""),
     ]);
     // Don't let subscribe fire a save during hydrate (set is synchronous, so bracket it).
+    // try/finally so a throw in hydrate can't leave suppressSave stuck true —
+    // that would silently disable every future debounced save for the session.
     suppressSave = true;
-    useStore.getState().hydrate(ws, path);
-    suppressSave = false;
+    try {
+      useStore.getState().hydrate(ws, path);
+    } finally {
+      suppressSave = false;
+    }
   } catch (e) {
     useStore.setState({ saveError: `load failed: ${String(e)}` });
   }
