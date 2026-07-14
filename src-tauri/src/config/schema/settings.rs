@@ -32,6 +32,11 @@ pub struct GlobalSettings {
     /// UI language ("system" | "ja" | "en"). Frontend-only; persisted only.
     #[serde(default = "GlobalSettings::default_language")]
     pub language: String,
+    /// UI text scale (1.0 = 100%). Frontend-only; the backend just persists it so
+    /// the choice survives a save/load round-trip (without this field the value
+    /// would be dropped on save and reset to 100% every launch).
+    #[serde(default = "GlobalSettings::default_ui_scale")]
+    pub ui_scale: f64,
     /// Sound cue id played on connect / auto-disconnect (frontend-only; the
     /// backend just persists the choice). "none" = silent.
     #[serde(default = "GlobalSettings::default_connect_sound")]
@@ -231,6 +236,9 @@ impl GlobalSettings {
     fn default_pie_overlay_design() -> String {
         "pie".to_string()
     }
+    fn default_ui_scale() -> f64 {
+        1.0
+    }
 }
 
 impl Default for GlobalSettings {
@@ -243,6 +251,7 @@ impl Default for GlobalSettings {
             scroll_amount: Self::default_scroll_amount(),
             theme: Self::default_theme(),
             language: Self::default_language(),
+            ui_scale: Self::default_ui_scale(),
             connect_sound: Self::default_connect_sound(),
             disconnect_sound: Self::default_disconnect_sound(),
             connect_vibration: Self::default_connect_vibration(),

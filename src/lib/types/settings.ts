@@ -1,6 +1,7 @@
 // App-wide settings (mirrors src-tauri/src/config/schema/settings.rs
-// `GlobalSettings`). Note: `uiScale` is a frontend-only field with no Rust
-// counterpart (persisted verbatim through the settings round-trip).
+// `GlobalSettings`). Frontend-only fields (theme/language/uiScale) still need a
+// Rust field so they round-trip through save/load — the backend just persists
+// them verbatim.
 
 import { BATTERY_FULL_MV, BATTERY_EMPTY_MV } from "./joycon";
 
