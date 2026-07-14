@@ -1,5 +1,30 @@
 [
   {
+    "version": "0.1.9",
+    "notes": {
+      "ja": [
+        "「元に戻す」が、その間に変更した他の割り当てまで巻き戻してしまう不具合を修正（削除・クリア・上書き）。",
+        "スティックでゆっくりカーソルを動かしている間（お絵描きなど）に自動切断されないように修正。",
+        "表示倍率が保存されず毎回100%に戻る不具合を修正。",
+        "接続直後に切断されると「再接続中」のまま固まる不具合を修正。",
+        "パイメニューが初回表示時に一瞬左上に出る不具合を修正。",
+        "ウィンドウを固定サイズにしました（大きさは表示倍率で調整できます）。",
+        "パイの「文字だけ」プリセットを青文字に。大きさ調整を出しやすい位置に移動。",
+        "割り当ての削除・上書き時に対象のボタン名をお知らせに表示（用語も「削除」に統一）。"
+      ],
+      "en": [
+        "Fixed Undo reverting other assignments changed in the meantime (delete / clear / overwrite).",
+        "Fixed auto-disconnect firing while slowly moving the cursor with the stick (e.g. while drawing).",
+        "Fixed the UI text scale not persisting (it reset to 100% every launch).",
+        "Fixed the app getting stuck “Reconnecting” if the link dropped right after connecting.",
+        "Fixed the pie menu briefly appearing at the top-left on its first open.",
+        "The window is now a fixed size (use the text-scale setting to resize).",
+        "The pie “text-only” preset now uses blue text; the size control is easier to reach.",
+        "Assignment delete/overwrite notifications now name the button (and use “delete” wording consistently)."
+      ]
+    }
+  },
+  {
     "version": "0.1.8",
     "notes": {
       "ja": [
