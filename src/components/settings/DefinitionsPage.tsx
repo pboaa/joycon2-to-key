@@ -8,6 +8,8 @@ import type {
   PressConfig,
 } from "../../lib/types";
 import { getDefUsage } from "../../lib/tauri";
+import { findDefRefsInDefinitions, findDefUsages } from "../../lib/defUsage";
+import { useStore } from "../../store";
 import { useConfirm } from "../Confirm";
 import { useDragReorder } from "../../lib/useDragReorder";
 import { useDefinitionsFilter } from "../../lib/useDefinitionsFilter";
@@ -166,9 +168,26 @@ export function DefinitionsPage({
     setSelectedId(id);
     setQuery("");
   };
-  const del = (d: Definition) => {
-    // No confirm — the delete fires immediately and shows an Undo toast (handled
-    // in the caller's onDelete). After deleting, select the neighbouring item (in the visible list).
+  const del = async (d: Definition) => {
+    // An operation used somewhere (a button assignment, or referenced by a pie
+    // slice / another operation) gets a confirm first — deleting it unlinks
+    // those buttons and leaves any {def} references dead. An unused operation
+    // deletes instantly, with the Undo toast as the safety net.
+    const uses = findDefUsages(useStore.getState().profiles, d.id).length;
+    const refs = findDefRefsInDefinitions(definitions, d.id).length;
+    if (uses + refs > 0) {
+      const ok = await confirm({
+        title: t("操作の削除"),
+        message: t(
+          "「{{name}}」は{{count}}箇所で使われています。削除するとボタンのリンクが外れ、パイや他の操作からの参照は無効になります。削除しますか？",
+          { name: d.name || t("(名前なし)"), count: uses + refs },
+        ),
+        danger: true,
+        okLabel: t("削除"),
+      });
+      if (!ok) return;
+    }
+    // After deleting, select the neighbouring item (in the visible list).
     if (d.id === selectedId) {
       const idx = shown.findIndex((x) => x.id === d.id);
       setSelectedId(shown[idx + 1]?.id ?? shown[idx - 1]?.id ?? null);

@@ -706,6 +706,9 @@ export const en: Record<string, string> = {
   "このパイ": "This pie",
   実寸プレビュー: "Actual-size preview",
   操作の初期化: "Reset actions",
+  操作の削除: "Delete operation",
+  "「{{name}}」は{{count}}箇所で使われています。削除するとボタンのリンクが外れ、パイや他の操作からの参照は無効になります。削除しますか？":
+    "“{{name}}” is used in {{count}} place(s). Deleting it unlinks those buttons and leaves any pie / other-operation references dead. Delete it?",
   メイン: "Main",
   "① 接続": "① Connect",
   "② ボタンを選ぶ": "② Pick a button",
