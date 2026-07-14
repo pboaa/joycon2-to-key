@@ -15,25 +15,33 @@ export async function fileToIconDataUrl(file: File): Promise<string> {
   if (!file.type.startsWith("image/") || file.type === "image/svg+xml") {
     throw new Error(i18n.t("PNG や JPEG などの画像を選んでください（SVG は不可）。"));
   }
-  const url = URL.createObjectURL(file);
-  try {
-    const img = await loadImage(url);
-    const longest = Math.max(img.naturalWidth, img.naturalHeight);
-    if (longest === 0) throw new Error(i18n.t("画像を読み込めませんでした。"));
-    const scale = Math.min(1, MAX_PX / longest);
-    const w = Math.max(1, Math.round(img.naturalWidth * scale));
-    const h = Math.max(1, Math.round(img.naturalHeight * scale));
-    const canvas = document.createElement("canvas");
-    canvas.width = w;
-    canvas.height = h;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error(i18n.t("画像を処理できませんでした。"));
-    ctx.imageSmoothingQuality = "high";
-    ctx.drawImage(img, 0, 0, w, h);
-    return canvas.toDataURL("image/png");
-  } finally {
-    URL.revokeObjectURL(url);
-  }
+  // Load via a data: URL, not a blob: URL: the app's CSP allows `img-src data:`
+  // but not `blob:`, so a blob URL (URL.createObjectURL) would be blocked and
+  // the image would silently fail to load.
+  const dataUrl = await readAsDataUrl(file);
+  const img = await loadImage(dataUrl);
+  const longest = Math.max(img.naturalWidth, img.naturalHeight);
+  if (longest === 0) throw new Error(i18n.t("画像を読み込めませんでした。"));
+  const scale = Math.min(1, MAX_PX / longest);
+  const w = Math.max(1, Math.round(img.naturalWidth * scale));
+  const h = Math.max(1, Math.round(img.naturalHeight * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error(i18n.t("画像を処理できませんでした。"));
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, 0, 0, w, h);
+  return canvas.toDataURL("image/png");
+}
+
+function readAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(new Error(i18n.t("画像を読み込めませんでした。")));
+    reader.readAsDataURL(file);
+  });
 }
 
 function loadImage(url: string): Promise<HTMLImageElement> {
