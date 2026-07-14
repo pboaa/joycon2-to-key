@@ -219,23 +219,33 @@ function makeActions(
 
   // ── Assignment (current profile/layer/button) ──
   const setAssignment = (next: ButtonAssignment | null) => {
-    if (!sel.profile || !sel.layer || !sel.selectedButton) return;
-    commitProfile(
-      layerOps.setButtonAssignment(
-        sel.profile,
-        sel.selectedLayer,
-        sel.selectedButton,
-        next,
-      ),
+    if (!sel.selectedButton) return;
+    // Read the latest profiles (not the render closure). A deferred call — e.g.
+    // a clear/overwrite Undo fired after other buttons changed — must apply this
+    // one button onto the current config, not a stale snapshot that would wipe
+    // those intervening edits.
+    const cfg = useStore.getState().profiles;
+    const profile = cfg?.[sel.selectedProfile];
+    if (!profile) return;
+    const np = layerOps.setButtonAssignment(
+      profile,
+      sel.selectedLayer,
+      sel.selectedButton,
+      next,
     );
+    if (np) setConfig({ ...cfg, [sel.selectedProfile]: np });
   };
   /** Set a specific button's assignment (not the selected one) — for the pad's
    * right-click menu, which targets the button under the cursor. */
   const setAssignmentAt = (btnKey: string, next: ButtonAssignment | null) => {
-    if (!sel.profile) return;
-    commitProfile(
-      layerOps.setButtonAssignment(sel.profile, sel.selectedLayer, btnKey, next),
-    );
+    // Read the latest profiles (not the render closure) so a deferred call — the
+    // right-click clear/paste Undo, fired after other buttons changed — restores
+    // just this button without clobbering those intervening edits.
+    const cfg = useStore.getState().profiles;
+    const profile = cfg?.[sel.selectedProfile];
+    if (!profile) return;
+    const np = layerOps.setButtonAssignment(profile, sel.selectedLayer, btnKey, next);
+    if (np) setConfig({ ...cfg, [sel.selectedProfile]: np });
   };
   const copyButton = () => {
     if (sel.selectedButton)
