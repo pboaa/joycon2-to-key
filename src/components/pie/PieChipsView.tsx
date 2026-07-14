@@ -55,7 +55,11 @@ export function PieChipsView({
     isHot: boolean,
     iconColor?: string,
   ) => {
-    const W = 118;
+    // Fixed size for every direction chip so the layout stays a tidy, uniform
+    // grid regardless of label length (content-sizing made short/long labels
+    // different widths, which read as messy). Overflow ellipsizes. 112 keeps the
+    // left/right chips inside the 280 viewBox at radius 82.
+    const W = 112;
     const H = 30;
     const bg = isHot
       ? hexToRgba(style.accent, Math.min(1, 0.85 * accentK))
@@ -75,34 +79,35 @@ export function PieChipsView({
         height={H}
         style={{ overflow: "visible", pointerEvents: "none" }}
       >
-        <div style={{ width: W, height: H, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 5,
-              maxWidth: W,
-              padding: "4px 9px",
-              borderRadius: 7,
-              background: bg,
-              border: `1px ${style.lineStyle} ${border}`,
-              color: col,
-              fontSize: 12.5,
-              fontWeight: 600,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              fontFamily: "system-ui, sans-serif",
-            }}
-          >
-            {icon && (
-              <span style={{ display: "inline-flex", flexShrink: 0 }}>
-                {/* Current slice keeps the highlight `col` for legibility on the
-                    accent fill; others take the operation's saved tint if any. */}
-                <OpIcon name={icon} size={13} color={isHot ? undefined : iconColor} />
-              </span>
-            )}
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{label || "—"}</span>
-          </div>
+        <div
+          style={{
+            boxSizing: "border-box",
+            width: W,
+            height: H,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 5,
+            padding: "4px 9px",
+            borderRadius: 7,
+            background: bg,
+            border: `1px ${style.lineStyle} ${border}`,
+            color: col,
+            fontSize: 12.5,
+            fontWeight: 600,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            fontFamily: "system-ui, sans-serif",
+          }}
+        >
+          {icon && (
+            <span style={{ display: "inline-flex", flexShrink: 0 }}>
+              {/* Current slice keeps the highlight `col` for legibility on the
+                  accent fill; others take the operation's saved tint if any. */}
+              <OpIcon name={icon} size={13} color={isHot ? undefined : iconColor} />
+            </span>
+          )}
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{label || "—"}</span>
         </div>
       </foreignObject>
     );
