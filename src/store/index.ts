@@ -233,7 +233,13 @@ function scheduleSave() {
   if (saveTimer !== null) clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     saveTimer = null;
-    void flush();
+    // Surface debounced-save failures the same way saveNow() does — otherwise a
+    // failed write (disk full, AV lock, APPDATA permission) is silently swallowed
+    // and the user keeps editing believing changes persist.
+    useStore.setState({ saving: true, saveError: null });
+    flush()
+      .catch((e) => useStore.setState({ saveError: String(e) }))
+      .finally(() => useStore.setState({ saving: false }));
   }, DEBOUNCE_MS);
 }
 
