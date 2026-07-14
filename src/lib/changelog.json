@@ -1,5 +1,16 @@
 [
   {
+    "version": "0.1.10",
+    "notes": {
+      "ja": [
+        "パイの範囲外にカーソルを出してもキャンセルしないのを既定に変更しました（設定で切り替えできます）。"
+      ],
+      "en": [
+        "Moving the cursor outside the pie no longer cancels it by default (toggle in settings)."
+      ]
+    }
+  },
+  {
     "version": "0.1.9",
     "notes": {
       "ja": [
