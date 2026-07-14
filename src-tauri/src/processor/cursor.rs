@@ -28,7 +28,8 @@ impl CursorMotion {
     /// Move the cursor from the analog stick position. `deadzone` is the radial
     /// centre cutoff (0..1). Called every tick while stick-mouse is on. Returns
     /// true when the stick actually drove the cursor (past the deadzone) — the
-    /// idle timer treats that as user activity so slow drawing isn't cut off.
+    /// idle timer treats that as user activity so stick-as-mouse cursor movement
+    /// isn't cut off.
     pub(super) fn apply_stick(&mut self, (x, y): (f32, f32), speed: f32, deadzone: f32) -> bool {
         if speed <= 0.0 {
             self.reset();

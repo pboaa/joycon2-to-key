@@ -374,7 +374,7 @@ impl InputProcessor {
     }
 
     /// Returns true when the stick drove the cursor this tick, so the idle timer
-    /// can count stick-only cursor motion (slow drawing) as activity.
+    /// can count stick-as-mouse cursor motion as activity.
     pub fn process(&mut self, pressed: ButtonSet, analog: Analog) -> bool {
         let mut pressed = pressed;
         let mut stick_moved = false;

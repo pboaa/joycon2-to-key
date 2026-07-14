@@ -141,8 +141,8 @@ fn run(mut processor: InputProcessor, rx: Receiver<InputMsg>, runtime: Arc<Runti
                 last_analog = analog;
                 // A button press OR stick-driven cursor motion counts as activity
                 // (moving the cursor with gentle stick pressure sets no button
-                // bits, so `frame.is_empty()` alone would let slow drawing idle
-                // out mid-stroke).
+                // bits, so `frame.is_empty()` alone would idle-disconnect while
+                // the stick is being used as a mouse).
                 let stick_moved = processor.process(frame, analog);
                 if !frame.is_empty() || stick_moved {
                     last_activity = Instant::now();

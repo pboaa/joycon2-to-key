@@ -4,7 +4,7 @@
     "notes": {
       "ja": [
         "「元に戻す」が、その間に変更した他の割り当てまで巻き戻してしまう不具合を修正（削除・クリア・上書き）。",
-        "スティックでゆっくりカーソルを動かしている間（お絵描きなど）に自動切断されないように修正。",
+        "スティックをマウスとして使いカーソルを動かしている間に自動切断される不具合を修正。",
         "表示倍率が保存されず毎回100%に戻る不具合を修正。",
         "接続直後に切断されると「再接続中」のまま固まる不具合を修正。",
         "パイメニューが初回表示時に一瞬左上に出る不具合を修正。",
@@ -14,7 +14,7 @@
       ],
       "en": [
         "Fixed Undo reverting other assignments changed in the meantime (delete / clear / overwrite).",
-        "Fixed auto-disconnect firing while slowly moving the cursor with the stick (e.g. while drawing).",
+        "Fixed auto-disconnect firing while moving the cursor with the stick (stick-as-mouse).",
         "Fixed the UI text scale not persisting (it reset to 100% every launch).",
         "Fixed the app getting stuck “Reconnecting” if the link dropped right after connecting.",
         "Fixed the pie menu briefly appearing at the top-left on its first open.",
