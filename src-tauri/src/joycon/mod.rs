@@ -253,6 +253,18 @@ impl JoyConHandle {
                 sleep(interval).await;
             }
             handle.reconnect_active.store(false, Ordering::SeqCst);
+            // Close the race with the notify task: if the link dropped in the
+            // window between this loop deciding to exit (connect succeeded) and
+            // clearing the flag, that drop's spawn_reconnect_loop() saw the flag
+            // still set and was swallowed — leaving us "Reconnecting" with no
+            // loop scanning. Re-check now that the flag is clear and respawn if
+            // we're still disconnected. (The swap-guard makes a redundant spawn a
+            // no-op, so this can't double-run.)
+            if !handle.user_disconnected.load(Ordering::SeqCst)
+                && !handle.is_connected().await
+            {
+                handle.spawn_reconnect_loop();
+            }
         });
     }
 }
