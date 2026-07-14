@@ -6,6 +6,8 @@ import { inputsLabel } from "../../lib/variants";
 import { defRefColor, defRefIcon } from "../../lib/defRef";
 import { PIE, hexToRgba, pointAt, toScreen } from "../../lib/pieGeometry";
 import { OpIcon } from "../ui/OpIcon";
+import { PieLabel } from "../PieLabel";
+import { PieRefIcon } from "./pieShared";
 import { CANCEL, type PieViewProps } from "./pieStyle";
 
 export function PieChipsView({
@@ -26,9 +28,23 @@ export function PieChipsView({
   const centreLabel = labelOf(center);
 
   // "chip" (Blender-style): draws no pie chart; places a bordered label (icon +
-  // text) radially per direction. The centre is the in-place chip, or a ring if none.
+  // text) radially per direction. The centre is a compact hub (not a full-size
+  // chip) so a long in-place label doesn't overlap the surrounding direction
+  // chips — matching how the other pie designs keep the centre small.
   const chipR = 82;
   const hasCenter = centreLabel.length > 0;
+  const centreIcon = defRefIcon(center, resolveDefIcon);
+  const centreColor = defRefColor(center, resolveDefColor);
+  // Compact centre box (~half a direction chip's width), auto-shrinking label.
+  const CTR_W = 64;
+  const CTR_H = 28;
+  const ctrBg = centreHot
+    ? hexToRgba(style.accent, Math.min(1, 0.85 * accentK))
+    : hexToRgba(style.bg, Math.min(1, k + 0.35));
+  const ctrBorder = centreHot
+    ? hexToRgba(style.accent, Math.min(1, accentK))
+    : centreColor ?? HAIR;
+  const ctrCol = centreHot ? "#fff" : style.labelColor;
   const chip = (
     key: number | string,
     cx: number,
@@ -94,16 +110,50 @@ export function PieChipsView({
   return (
     <svg viewBox={PIE.viewBox} width="100%" height="100%">
       {hasCenter ? (
-        chip(
-          -1,
-          PIE.cx,
-          PIE.cy,
-          centreLabel,
-          defRefIcon(center, resolveDefIcon),
-          true,
-          centreHot,
-          defRefColor(center, resolveDefColor),
-        )
+        <>
+          <rect
+            x={PIE.cx - CTR_W / 2}
+            y={PIE.cy - CTR_H / 2}
+            width={CTR_W}
+            height={CTR_H}
+            rx={7}
+            fill={ctrBg}
+            stroke={ctrBorder}
+            strokeWidth={1}
+            strokeDasharray={dash}
+          />
+          {centreIcon ? (
+            <>
+              <PieRefIcon
+                x={PIE.cx}
+                y={PIE.cy - 6}
+                size={12}
+                color={ctrCol}
+                iconColor={centreHot ? undefined : centreColor}
+                icon={centreIcon}
+              />
+              <PieLabel
+                x={PIE.cx}
+                y={PIE.cy + 7}
+                text={centreLabel}
+                maxWidth={CTR_W - 12}
+                base={8}
+                min={7}
+                fill={ctrCol}
+              />
+            </>
+          ) : (
+            <PieLabel
+              x={PIE.cx}
+              y={PIE.cy}
+              text={centreLabel}
+              maxWidth={CTR_W - 12}
+              base={9}
+              min={7}
+              fill={ctrCol}
+            />
+          )}
+        </>
       ) : (
         <circle
           cx={PIE.cx}
