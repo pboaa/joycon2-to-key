@@ -80,6 +80,16 @@ export const JoyConStage = memo(function JoyConStage({
   }, [liveSide]);
 
   const shownSide = manualSide;
+
+  // Switching the shown pad (manually or via auto-follow) hides the other
+  // side's buttons — a selection there would keep the editor/stats panel on a
+  // button that's no longer on screen, so drop it when the side changes.
+  useEffect(() => {
+    if (!selected) return;
+    const keys = shownSide === "r" ? BUTTON_KEYS_RIGHT : BUTTON_KEYS_LEFT;
+    if (!keys.includes(selected)) onDeselect();
+  }, [shownSide, selected, onDeselect]);
+
   const live = shownSide === liveSide;
   const accent = shownSide === "r" ? accentR : accentL;
 
