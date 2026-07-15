@@ -618,6 +618,8 @@ export const en: Record<string, string> = {
   "固定（トグル）": "Latch (toggle)",
   "押している間くり返し入力します（連打）。間隔はms。":
     "Repeats the input while held (auto-repeat). Interval in ms.",
+  "「押している間」「固定」とは併用できません。":
+    "Not available together with Hold or Latch.",
   連打: "Repeat",
   "方向（パイメニュー）": "Directions (pie menu)",
   角度: "Angle",

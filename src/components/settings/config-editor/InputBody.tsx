@@ -96,7 +96,12 @@ export function InputBody({
           onClick={() =>
             onChange({ ...press, repeatMs: repeat ? undefined : defaultRepeatMs })
           }
-          tip={t("押している間くり返し入力します（連打）。間隔はms。")}
+          // Disabled chips still hover, so the tip can say WHY it's unavailable.
+          tip={
+            mode === "tap"
+              ? t("押している間くり返し入力します（連打）。間隔はms。")
+              : t("「押している間」「固定」とは併用できません。")
+          }
           className={chip}
         >
           {t("連打")}
