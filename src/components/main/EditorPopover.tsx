@@ -6,6 +6,7 @@ import type { Selection } from "../../lib/useSelection";
 import type { ConfigActions } from "../../lib/useConfigActions";
 import { SIDE_PANEL_CLS, EDITOR_BODY_PAD, EDITOR_CARD_CLS } from "../ui/layout";
 import { Button } from "../ui/Button";
+import { EmptyState } from "../ui/EmptyState";
 import { KeyCap } from "../ui/KeyCap";
 import { Toggle } from "../ui/Toggle";
 import { NestedSettings, NumSlider, SettingRow } from "../settings/tabs/shared";
@@ -180,18 +181,11 @@ export const EditorPopover = memo(function EditorPopover({
     // operations editor), not a floating card.
     <div data-tour="editor" className={SIDE_PANEL_CLS}>
       {content ?? (
-        <div className="flex flex-col items-center justify-center gap-3 p-6 text-center">
-          <IconClick
-            size={30}
-            className="text-text3/60"
-            aria-hidden
-          />
-          <p className="text-body text-text2 leading-relaxed">
-            {t("Joy-Con 図のボタンを選ぶと、")}
-            <br />
-            {t("ここに設定が表示されます")}
-          </p>
-        </div>
+        <EmptyState centered icon={<IconClick size={30} />}>
+          {t("Joy-Con 図のボタンを選ぶと、")}
+          <br />
+          {t("ここに設定が表示されます")}
+        </EmptyState>
       )}
     </div>
   );

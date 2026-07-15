@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IconPencil, IconRotate } from "@tabler/icons-react";
+import { IconClick, IconPencil, IconRotate } from "@tabler/icons-react";
 import type { Definition, PressConfig } from "../../lib/types";
 import type { Heatmap } from "../../lib/useHeatmap";
 import { getPieUsage, resetButtonUsage, type DayPieUsageMap } from "../../lib/tauri";
@@ -11,6 +11,7 @@ import { makeDefResolver } from "../../lib/defResolver";
 import { useStore } from "../../store";
 import { useConfirm } from "../Confirm";
 import { confirmReset } from "../../lib/confirms";
+import { EmptyState } from "../ui/EmptyState";
 import { KeyCap } from "../ui/KeyCap";
 import { SIDE_PANEL_CLS } from "../ui/layout";
 import { PieFigure } from "../pie/PieFigure";
@@ -184,9 +185,9 @@ export function StatsPanel({
         </div>
       </>
     ) : (
-      <div className="flex items-center justify-center p-4 text-center text-body text-text3 leading-relaxed">
+      <EmptyState centered icon={<IconClick size={30} />}>
         {t("図のボタンを選ぶと、使用回数が表示されます。")}
-      </div>
+      </EmptyState>
     );
 
   return (

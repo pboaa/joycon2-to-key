@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IconPalette, IconPhotoPlus } from "@tabler/icons-react";
+import { IconClick, IconPalette, IconPhotoPlus } from "@tabler/icons-react";
 import type { Definition, DefinitionGroup, PressConfig } from "../../lib/types";
 import { OP_COLOR_PRESETS } from "../../lib/opIcons";
 import { OpIcon } from "../ui/OpIcon";
@@ -137,7 +137,7 @@ export function DefinitionEditorPane({
           )}
         </div>
       ) : (
-        <EmptyState centered>
+        <EmptyState centered icon={<IconClick size={30} />}>
           {definitions.length === 0
             ? "下の「新しい操作」で作成してください"
             : "左の一覧から操作を選択してください"}
