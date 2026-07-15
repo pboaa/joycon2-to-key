@@ -31,6 +31,7 @@ export function ConnectionTab({
         options={SOUND_OPTIONS}
         onChange={(v) => setG({ connectSound: v })}
         onPreview={playSound}
+        previewDisabled={settings.connectSound === "none"}
         previewTip="試聴"
         reset={rst("connectSound")}
       />
@@ -50,6 +51,7 @@ export function ConnectionTab({
         options={SOUND_OPTIONS}
         onChange={(v) => setG({ disconnectSound: v })}
         onPreview={playSound}
+        previewDisabled={settings.disconnectSound === "none"}
         previewTip="試聴"
         reset={rst("disconnectSound")}
       />
