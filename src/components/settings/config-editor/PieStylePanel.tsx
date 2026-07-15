@@ -31,9 +31,12 @@ import { PieAppearanceCards } from "../PieAppearanceCards";
 export function PieStylePanel({
   press,
   onChange,
+  preview,
 }: {
   press: PiePress;
   onChange: (p: PiePress) => void;
+  /** The style tab's actual-size preview state, re-surfaced in the detail modal. */
+  preview?: { on: boolean; onToggle: () => void };
 }) {
   const { t } = useTranslation();
   const g = useStore((s) => s.settings);
@@ -163,12 +166,14 @@ export function PieStylePanel({
             />
           </div>
 
-          {/* 見た目セクションも同じアコーディオン内に、枠なしのグループで収める。 */}
+          {/* プリセット＋大きさは同じアコーディオン内の枠なしグループ、細かな
+              調整は「詳細設定」モーダルへ（狭い列でも崩れない）。 */}
           <PieAppearanceCards
             nested
             look={look}
             set={(patch) => setA(patch)}
             resetFor={resetForLook}
+            preview={preview}
           />
         </NestedSettings>
       </Card>

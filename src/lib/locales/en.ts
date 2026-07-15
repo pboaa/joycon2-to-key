@@ -157,7 +157,6 @@ export const en: Record<string, string> = {
   色: "Color",
   既定の色: "Default color",
   ラベル: "Label",
-  実寸でプレビュー: "Preview at actual size",
   プレビューを閉じる: "Close preview",
   "オフにしてもパイメニューは発火します（画面上のパイだけを隠します）。":
     "Pie menus still fire when off — only the on-screen pie is hidden.",
@@ -259,7 +258,6 @@ export const en: Record<string, string> = {
   プレビュー: "Preview",
   線の色: "Line color",
   薄灰: "Light gray",
-  プレビュー中: "Previewing",
   実寸のパイを画面に表示して確認: "Show the pie at actual size on screen",
   アイコンを選ぶ: "Choose an icon",
   アイコンなし: "No icon",

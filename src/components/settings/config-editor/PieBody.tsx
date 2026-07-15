@@ -13,6 +13,7 @@ import { useConfirm } from "../../Confirm";
 import { Button } from "../../ui/Button";
 import { InputCommandEditor } from "../InputCommandEditor";
 import { PieFigure } from "../../pie/PieFigure";
+import { PiePreviewToggle } from "../PiePreviewToggle";
 import { PieStylePanel } from "./PieStylePanel";
 import { makeDefResolver } from "../../../lib/defResolver";
 import { fillFirst } from "../../../lib/config/press";
@@ -194,24 +195,20 @@ export function PieBody({
       {tab === "style" ? (
         <>
           {/* Preview lives in the スタイル tab (full-width), like 設定→パイメニュー. */}
-          <button
-            onClick={() => setShowPreview((v) => !v)}
-            data-tip={t("実寸のパイを画面に表示して確認")}
-            className={
-              "w-full py-2 text-label font-semibold rounded-row border transition-colors " +
-              (showPreview
-                ? "bg-accent text-white border-accent"
-                : "bg-accent/10 text-accent border-accent hover:bg-accent hover:text-white")
-            }
-          >
-            {showPreview ? t("プレビュー中") : t("実寸プレビュー")}
-          </button>
+          <PiePreviewToggle
+            on={showPreview}
+            onToggle={() => setShowPreview((v) => !v)}
+          />
           {showPreview && (
             <p className="text-caption text-text3">
               {t("実寸プレビューを画面に表示中（選択中の方向をハイライト）。")}
             </p>
           )}
-          <PieStylePanel press={press} onChange={onChange} />
+          <PieStylePanel
+            press={press}
+            onChange={onChange}
+            preview={{ on: showPreview, onToggle: () => setShowPreview((v) => !v) }}
+          />
         </>
       ) : (
         <>
