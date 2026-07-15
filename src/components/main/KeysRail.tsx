@@ -18,12 +18,12 @@ import { AddRow } from "../ui/AddRow";
 import { LayerSettingsModal } from "../settings/LayerSettingsModal";
 import { useContextMenu, type MenuItem } from "../ui/ContextMenu";
 
-/** Left rail of the key-assignment page (matches the profiles page's layout):
- * a profile list and a layer list. Rows are one-click switchers and drag to
- * reorder; the trailing → opens that item's settings (profile page / layer
- * modal). Profile *editing* lives on the profiles page; layers are added here.
- * In Stats mode the caller passes `readOnly` (hides editing affordances) and a
- * `footer` (the period picker) — the rail itself knows nothing about heatmaps. */
+/** Left rail of the key-assignment page: a profile list and a layer list.
+ * Rows are one-click switchers and drag to reorder; double-click renames
+ * inline, and the trailing ⋮ (or right-click) opens that item's menu
+ * (settings modal / copy / delete). In Stats mode the caller passes
+ * `readOnly` (hides editing affordances) and a `footer` (the period
+ * picker) — the rail itself knows nothing about heatmaps. */
 export function KeysRail({
   selection: s,
   actions,
