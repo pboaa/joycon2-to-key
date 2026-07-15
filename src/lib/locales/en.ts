@@ -758,6 +758,8 @@ export const en: Record<string, string> = {
     "Inheritance can be “Inherit all”, “Inherit only switches & modifiers”, or “Independent”.",
   "レイヤー名はダブルクリックで変更できます。":
     "Double-click a layer name to rename it.",
+  "プロファイル名は一覧のダブルクリックで変更できます。":
+    "Double-click a profile in the list to rename it.",
   "一度作った操作を保存しておくと、いろいろなボタンから使い回せます（フォルダで整理）。毎回作り直す手間が省けます。":
     "Save an action once and reuse it from any button (organized in folders) — no need to rebuild it each time.",
   "よく使う操作を登録して使い回せます。":
