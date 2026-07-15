@@ -58,10 +58,28 @@ export function KeysRail({
     if (next && next !== editingLayer) actions.renameLayer(editingLayer, next);
     setEditingLayer(null);
   };
+  // Same inline rename for profiles (double-click), so the two adjacent lists
+  // behave alike; the settings modal's name field stays for the full editor.
+  const [editingProfile, setEditingProfile] = useState<string | null>(null);
+  const [profileDraft, setProfileDraft] = useState("");
+  const profileEditRef = useRef<HTMLInputElement>(null);
+  const startEditProfile = (name: string) => {
+    setEditingProfile(name);
+    setProfileDraft(name);
+    setTimeout(() => profileEditRef.current?.select(), 0);
+  };
+  const commitProfileEdit = () => {
+    if (editingProfile === null) return;
+    const next = profileDraft.trim();
+    if (next && next !== editingProfile)
+      actions.renameProfile(editingProfile, next);
+    setEditingProfile(null);
+  };
 
-  const profileDnd = useDragReorder((from, to) =>
-    actions.reorderProfiles(moveIndex(s.profileNames, from, to)),
-  );
+  const profileDnd = useDragReorder((from, to) => {
+    setEditingProfile(null); // a rename in progress must not linger after a move
+    actions.reorderProfiles(moveIndex(s.profileNames, from, to));
+  });
   const layerDnd = useDragReorder((from, to) => {
     setEditingLayer(null); // a rename in progress must not linger after a move
     actions.reorderLayers(moveIndex(s.layerNames, from, to));
@@ -168,35 +186,51 @@ export function KeysRail({
               index={i}
               dnd={profileDnd}
               selected={on}
-              enabled={!readOnly && !isDefault}
+              enabled={!readOnly && !isDefault && editingProfile !== name}
               reserveHandle
               onContextMenu={
-                readOnly ? undefined : (e) => ctx.open(e, profileMenu(name, isDefault))
+                readOnly || editingProfile === name
+                  ? undefined
+                  : (e) => ctx.open(e, profileMenu(name, isDefault))
               }
             >
-              <button
-                onClick={() => s.setSelectedProfile(name)}
-                // Rail is narrow, so long user names truncate — the tip shows the
-                // full name (default is short and localized already).
-                data-tip={isDefault ? undefined : name}
-                className={LIST_ROW_BTN}
-              >
-                <RowLabel
-                  selected={on}
-                  icon={
-                    <IconThumb
-                      src={icon}
-                      size={16}
-                      fallback={
-                        isDefault ? <IconWorld size={11} aria-hidden /> : <IconDeviceGamepad2 size={11} aria-hidden />
-                      }
-                    />
-                  }
-                  label={isDefault ? t("デフォルト") : name}
+              {editingProfile === name ? (
+                <RenameInput
+                  ref={profileEditRef}
+                  value={profileDraft}
+                  onChange={setProfileDraft}
+                  onCommit={commitProfileEdit}
+                  onCancel={() => setEditingProfile(null)}
                 />
-              </button>
+              ) : (
+                <button
+                  onClick={() => s.setSelectedProfile(name)}
+                  onDoubleClick={
+                    readOnly || isDefault ? undefined : () => startEditProfile(name)
+                  }
+                  // Rail is narrow, so long user names truncate — the tip shows the
+                  // full name (default is short and localized already).
+                  data-tip={isDefault ? undefined : name}
+                  className={LIST_ROW_BTN}
+                >
+                  <RowLabel
+                    selected={on}
+                    icon={
+                      <IconThumb
+                        src={icon}
+                        size={16}
+                        fallback={
+                          isDefault ? <IconWorld size={11} aria-hidden /> : <IconDeviceGamepad2 size={11} aria-hidden />
+                        }
+                      />
+                    }
+                    label={isDefault ? t("デフォルト") : name}
+                  />
+                </button>
+              )}
               {/* Default is a passthrough with no settings / delete — no menu. */}
-              {!readOnly && !isDefault && menuBtn(on, profileMenu(name, isDefault))}
+              {!readOnly && !isDefault && editingProfile !== name &&
+                menuBtn(on, profileMenu(name, isDefault))}
             </ReorderableRow>
           );
         })}
