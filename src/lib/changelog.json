@@ -1,5 +1,28 @@
 [
   {
+    "version": "0.1.13",
+    "notes": {
+      "ja": [
+        "統計のパイ図で、使用回数の数字が操作名に重なって読めない不具合を修正。図を大きくして、文字も読みやすくしました。",
+        "パイメニューの見た目の「詳細設定」を別画面に分けました。手前にはプリセットと大きさだけが出るので見やすく、調整できる項目は今までどおりです。",
+        "プロファイル名を、一覧のダブルクリックで変更できるように（レイヤーと同じ操作）。",
+        "L / R を切り替えたあとも、反対側で選んでいたボタンの設定が右に出たままになる不具合を修正。",
+        "接続音が「なし」のときは試聴ボタンを押せないように（振動の行と同じ挙動に統一）。",
+        "「連打」が選べないときに、その理由をカーソルを乗せて確認できるように。",
+        "各パネルの「選んでください」の表示を統一。"
+      ],
+      "en": [
+        "Fixed the Stats pie printing usage counts on top of the operation names. The figure is bigger and its text easier to read.",
+        "Pie appearance fine-tuning moved into its own dialog, leaving only the presets and size up front — same settings, easier to read.",
+        "Profiles can now be renamed by double-clicking them in the list (same as layers).",
+        "Fixed the editor staying on a button from the other side after switching L / R.",
+        "The sound preview button is now disabled when the cue is None (matching the vibration rows).",
+        "Hovering a disabled Repeat chip now explains why it isn't available.",
+        "Unified the \"nothing selected\" placeholders across the side panels."
+      ]
+    }
+  },
+  {
     "version": "0.1.12",
     "notes": {
       "ja": [
