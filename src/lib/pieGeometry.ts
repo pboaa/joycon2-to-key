@@ -112,6 +112,15 @@ export interface FittedLabel {
   fontSize: number;
 }
 
+/** How far a fitted label reaches below its anchor point (viewBox units), so a
+ * caller stacking something under it (the Stats usage count) can clear the text.
+ * Mirrors {@link PieLabel}'s own two-line tspan layout — a label that wraps
+ * hangs half a line lower than a single-line one. */
+export function labelDrop(text: string, maxWidth: number, base?: number, min?: number): number {
+  const { lines, fontSize } = fitLabel(text, maxWidth, base, min);
+  return (lines.length > 1 ? fontSize * 0.55 : 0) + fontSize * 0.5;
+}
+
 /** Fit `text` into `maxWidth`: shrink the font from `base` down to `min`, then
  * wrap to two lines, then truncate the (single) line with an ellipsis if it
  * still doesn't fit. */
