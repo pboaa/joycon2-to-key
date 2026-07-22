@@ -32,7 +32,7 @@ pub fn send_actions(actions: &[InputAction]) {
         return;
     }
 
-    let mut state = HELD_STATE.lock().unwrap();
+    let mut state = lock_held();
 
     let modifier_codes_in_batch: HashSet<u16> = actions
         .iter()
@@ -127,15 +127,19 @@ pub fn send_actions(actions: &[InputAction]) {
         }
     }
 
+    // Release the lock before the SendInput FFI call. State is already updated
+    // consistently with `inputs`, and holding the mutex across the syscall only
+    // widens the window in which a panic here could poison it. (Sends originate
+    // from the single input thread, so ordering across sends is unaffected.)
+    drop(state);
+
     unsafe {
         SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
     }
 }
 
 pub fn release_all() {
-    let Ok(mut state) = HELD_STATE.lock() else {
-        return; // poisoned on another thread's panic — nothing sane to release
-    };
+    let mut state = lock_held();
     if state.modifiers.is_empty() && state.keys.is_empty() && state.mouse.is_empty() {
         return;
     }
@@ -259,4 +263,12 @@ static HELD_STATE: Lazy<Mutex<HeldState>> = Lazy::new(|| {
         mouse: HashSet::new(),
     })
 });
+
+/// Lock the held-state, recovering the guard even if the mutex was poisoned by
+/// a panic on another thread. The stakes here are stuck keys: if `release_all`
+/// ever bailed on a poisoned lock it would leave keys physically down system-
+/// wide, so we always take the (internally consistent) state and carry on.
+fn lock_held() -> std::sync::MutexGuard<'static, HeldState> {
+    HELD_STATE.lock().unwrap_or_else(|e| e.into_inner())
+}
 
