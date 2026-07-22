@@ -188,7 +188,13 @@ impl JoyConHandle {
             let _ = p.disconnect().await;
         }
         drop(guard);
+        // Queue the full processor reset (clears logical hold/toggle/layer
+        // state), and synchronously free any physically-held keys as a backstop:
+        // input.reset() is delivered through the input thread's channel, which
+        // may be blocked mid-SendInput or already dead when we disconnect, and a
+        // held key must never outlive the connection.
         self.input.reset();
+        crate::keyboard::release_all();
         self.clear_battery();
         self.apply_event(LinkEvent::UserDisconnect).await;
         *self.snapshot.lock().await = None;

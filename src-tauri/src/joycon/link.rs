@@ -155,7 +155,12 @@ impl JoyConHandle {
                 let mut guard = handle.peripheral.lock().await;
                 *guard = None;
             }
+            // Queue the processor reset for logical state, and synchronously free
+            // any held keys as a backstop — the queued reset rides the input
+            // thread's channel, which may be stalled or dead on an unexpected
+            // link drop, and a held key must not survive the disconnect.
             handle.input.reset();
+            crate::keyboard::release_all();
             handle.clear_battery();
             *handle.snapshot.lock().await = None;
 
