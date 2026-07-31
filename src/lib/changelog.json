@@ -1,5 +1,16 @@
 [
   {
+    "version": "0.1.14",
+    "notes": {
+      "ja": [
+        "コントローラーの接続が切れたときやアプリ終了時に、押していた修飾キー（Ctrl や Shift など）がまれに押しっぱなしのまま残ることがある不具合を修正。"
+      ],
+      "en": [
+        "Fixed modifier keys (such as Ctrl or Shift) occasionally staying held down after the controller disconnected or the app quit."
+      ]
+    }
+  },
+  {
     "version": "0.1.13",
     "notes": {
       "ja": [
