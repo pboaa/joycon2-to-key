@@ -127,15 +127,19 @@ pub fn send_actions(actions: &[InputAction]) {
         }
     }
 
-    // Release the lock before the SendInput FFI call. State is already updated
-    // consistently with `inputs`, and holding the mutex across the syscall only
-    // widens the window in which a panic here could poison it. (Sends originate
-    // from the single input thread, so ordering across sends is unaffected.)
-    drop(state);
-
+    // Hold the lock ACROSS SendInput. `state` is already updated to match
+    // `inputs`, but release_all() runs on OTHER threads (app exit, and the
+    // disconnect backstop): if it could lock in between our state update and the
+    // actual injection, it would drain the held modifier and send its key-UP
+    // *before* our key-DOWN lands here — leaving the modifier physically down
+    // with nothing left tracking it to ever release it (a stuck Ctrl/Shift).
+    // Keeping the guard makes an injection atomic w.r.t. release_all. Poisoning
+    // is not a concern here: lock_held() recovers a poisoned guard, so a panic
+    // under the lock can't make release_all give up.
     unsafe {
         SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
     }
+    drop(state);
 }
 
 pub fn release_all() {
@@ -146,7 +150,6 @@ pub fn release_all() {
     let mut keys: Vec<u16> = state.modifiers.drain().map(|(vk, _)| vk).collect();
     keys.extend(state.keys.drain().map(|(vk, _)| vk));
     let mice: Vec<MouseButton> = state.mouse.drain().collect();
-    drop(state);
 
     let mut inputs = Vec::with_capacity(keys.len() + mice.len());
     for code in keys {
@@ -155,9 +158,13 @@ pub fn release_all() {
     for b in mice {
         inputs.push(make_mouse(b, false));
     }
+    // Inject under the lock, symmetric with send_actions: a concurrent
+    // send_actions on the input thread must not slip a key-DOWN in between our
+    // drain and these key-UPs, or that key would end up down with no tracking.
     unsafe {
         SendInput(&inputs, std::mem::size_of::<INPUT>() as i32);
     }
+    drop(state);
 }
 
 fn make_key(vk: u16, pressed: bool) -> INPUT {
